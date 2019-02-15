@@ -1,0 +1,45 @@
+
+// Fonts
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+@import "~vue-multiselect/dist/vue-multiselect.min.css";
+@import "~vue-wysiwyg/dist/vueWysiwyg.css";
+
+
+.image-container {
+    display: flex; 
+    justify-content: space-around; 
+    min-width: 100%;
+}
+
+.object-fit-cover {
+    height:40px;
+}
+
+/* Multiselect */
+.multiselect__option--highlight:after{
+	background:#1976D2 !important;
+	color:#fff
+}
+
+.multiselect__option--highlight{
+	background:#1976D2 !important;
+}
+
+.is-danger  {
+  color: #FF6B6B;
+  font-size: 12px;
+}
+
+    
