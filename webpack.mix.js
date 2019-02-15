@@ -11,7 +11,7 @@ const mix = require('laravel-mix');
  |
  */
 mix.browserSync({
-   proxy: 'ecommerce.work'
+   proxy: 'shopping.work'
 })
 
 mix.js('resources/js/app.js', 'public/js')

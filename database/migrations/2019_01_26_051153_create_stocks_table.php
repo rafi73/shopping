@@ -20,6 +20,7 @@ class CreateStocksTable extends Migration
             $table->integer('batch');
             $table->integer('seller_id');
             $table->date('expiry_date');
+            $table->boolean('active');
             $table->integer('created_by');
             $table->integer('updated_by');
             $table->timestamps();

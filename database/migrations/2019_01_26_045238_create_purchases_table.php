@@ -19,6 +19,9 @@ class CreatePurchasesTable extends Migration
             $table->decimal('cost', 5,2); 
             $table->decimal('selling_price', 5,2);
             $table->integer('seller_id'); 
+            $table->boolean('active');
+            $table->integer('created_by');
+            $table->integer('updated_by');
             $table->timestamps();
         });
     }

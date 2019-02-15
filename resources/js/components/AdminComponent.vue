@@ -58,7 +58,7 @@
         data: () => ({
             drawer: false,
             footer: new Date().getFullYear(),
-            title: 'Clicknet Technologies',
+            title: 'Application',
         }),
 
         mounted() {

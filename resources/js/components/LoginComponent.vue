@@ -17,8 +17,8 @@
                                     </v-tooltip> -->
                                 </v-toolbar>
                                 <v-card-text>
-                                    <v-form>
-                                        <v-text-field prepend-icon="person" name="login" label="Login" type="text" v-model="user.email"></v-text-field>
+                                    <v-form @keyup.enter.native="login()">
+                                        <v-text-field prepend-icon="person" name="login" label="Login" type="text" v-model="user.email" ></v-text-field>
                                         <v-text-field prepend-icon="lock" name="password" label="Password" id="password" type="password" v-model="user.password"></v-text-field>
                                     </v-form>
                                 </v-card-text>
