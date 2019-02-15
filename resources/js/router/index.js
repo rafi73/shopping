@@ -27,6 +27,8 @@ import quoteRequest from '../components/Admin/QuoteRequest.vue'
 import specification from '../components/Admin/Specification.vue'
 import subCategory from '../components/Admin/SubCategory.vue'
 import seller from '../components/Admin/Seller.vue'
+import stock from '../components/Admin/Stock.vue'
+import purchase from '../components/Admin/Purchase.vue'
 
 
 export default new Router({
@@ -181,6 +183,28 @@ export default new Router({
             meta: 
             { 
                 name: 'Seller', 
+                icon: 'supervisor_account',
+                requiresAuth : true
+            } 
+        },
+        { 
+            path: '/admin/stock', 
+            name: 'stock', 
+            component: stock, 
+            meta: 
+            { 
+                name: 'Stock', 
+                icon: 'supervisor_account',
+                requiresAuth : true
+            } 
+        },
+        { 
+            path: '/admin/purchase', 
+            name: 'purchase', 
+            component: purchase, 
+            meta: 
+            { 
+                name: 'Purchase', 
                 icon: 'supervisor_account',
                 requiresAuth : true
             } 

@@ -13,6 +13,8 @@
                 <r-link linkname='price-list'></r-link>
                 <r-link linkname='quote-request'></r-link>
                 <r-link linkname='seller'></r-link>
+                <r-link linkname='stock'></r-link>
+                <r-link linkname='purchase'></r-link>
                
             </v-list>
         </v-navigation-drawer>

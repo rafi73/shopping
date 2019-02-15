@@ -146,6 +146,66 @@ Route::group(['middleware' => 'jwt.auth'], function ($router) {
     Route::put('customer', 'CustomerController@store');
     // Delete customer
     Route::delete('customer/{id}', 'CustomerController@destroy');
+
+
+    # 1.1 brand routes
+    // List brand
+    Route::get('brands', 'BrandController@index');
+    // List single brand
+    Route::get('brand/{id}', 'BrandController@show');
+    // Create new brand
+    Route::post('brand', 'BrandController@store');
+    // Update brand
+    Route::put('brand', 'BrandController@store');
+    // Delete brand
+    Route::delete('brand/{id}', 'BrandController@destroy');
+    // List brand
+    Route::get('brands-datatable', 'BrandController@getDatatable');
+
+
+
+    # 1.1 Stock routes
+    // List stock
+    Route::get('stocks', 'StockController@index');
+    // List single stock
+    Route::get('stock/{id}', 'StockController@show');
+    // Create new stock
+    Route::post('stock', 'StockController@store');
+    // Update stock
+    Route::put('stock', 'StockController@store');
+    // Delete stock
+    Route::delete('stock/{id}', 'StockController@destroy');
+    // List stock
+    Route::get('stocks-datatable', 'StockController@getDatatable');
+
+
+    # 1.1 Seller routes
+    // List seller
+    Route::get('sellers', 'SellerController@index');
+    // List single seller
+    Route::get('seller/{id}', 'SellerController@show');
+    // Create new seller
+    Route::post('seller', 'SellerController@store');
+    // Update seller
+    Route::put('seller', 'SellerController@store');
+    // Delete seller
+    Route::delete('seller/{id}', 'SellerController@destroy');
+    // List seller
+    Route::get('sellers-datatable', 'SellerController@getDatatable');
+
+    # 1.1 Purchase routes
+    // List purchase
+    Route::get('purchases', 'PurchaseController@index');
+    // List single purchase
+    Route::get('purchase/{id}', 'PurchaseController@show');
+    // Create new purchase
+    Route::post('purchase', 'PurchaseController@store');
+    // Update purchase
+    Route::put('purchase', 'PurchaseController@store');
+    // Delete purchase
+    Route::delete('purchase/{id}', 'PurchaseController@destroy');
+    // List purchase
+    Route::get('purchases-datatable', 'PurchaseController@getDatatable');
 });
 
 Route::post('register', 'AuthController@register');
