@@ -80,5 +80,11 @@
     "customer_state": "State",
     "customer_address": "Address",
     "customer_dealer": "Dealer",
-    "customer_active": "Active"
+    "customer_active": "Active",
+
+    "seller_name": "Seller",
+    "seller_email": "email",
+    "seller_company": "company",
+    "seller_contact": "contact",
+    "seller_active": "Active"
 }

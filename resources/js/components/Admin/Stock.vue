@@ -6,15 +6,15 @@
 					<v-card-title class="grey lighten-4">
 						<v-icon class="pr-2">
 							{{ $route.meta.icon }}
-						</v-icon> 
+						</v-icon>
 						<h3 class="headline mb-0">{{ $route.meta.name }}</h3>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
-						<v-text-field v-on:keyup.enter="fetchAll()" v-model="search" md4 append-icon="search" label="Search" single-line
-						 hide-details></v-text-field>
+						<v-text-field v-on:keyup.enter="fetchAll()" v-model="search" md4 append-icon="search"
+							label="Search" single-line hide-details></v-text-field>
 						<v-btn @click.prevent="datatbleSearch()" fab dark small color="primary">
 							<v-icon dark>search</v-icon>
 						</v-btn>
@@ -26,14 +26,21 @@
 						</v-btn>
 					</v-card-title>
 
-					<v-data-table :headers="headers" :items="brands" :pagination.sync="pagination" :total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
+
+					<v-data-table :headers="headers" :items="products" :pagination.sync="pagination"
+						:total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
 						<template slot="items" slot-scope="props">
 							<td>{{ props.item.name }}</td>
-							<td>{{ props.item.description }}</td>
-							<td class="text-xs-center">{{ props.item.created_at }}</td>
-							<td class="text-xs-center">{{ props.item.updated_at }}</td>
-							<td class="text-xs-center">{{ props.item.active }}</td>
-							<td class="text-xs-center">
+							<td>{{ props.item.category.name }}</td>
+							<td>
+								<div class="image-container">
+									<img class="object-fit-cover"
+										:src="props.item.image.toString().split(',')[0] || '/img/v.png'" />
+								</div>
+							</td>
+							<td>{{ props.item.active }}</td>
+							<td>{{ props.item.created_at }}</td>
+							<td>
 								<v-icon small class="mr-2" @click="editItem(props.item)">
 									edit
 								</v-icon>
@@ -44,13 +51,14 @@
 						</template>
 					</v-data-table>
 					<div class="mb-2 text-xs-center">
-						<v-pagination v-model="pagination.page" :length="lastPage" :total-visible="8" @input="next" circle></v-pagination>
+						<v-pagination v-model="pagination.page" :length="lastPage" :total-visible="8" @input="next"
+							circle></v-pagination>
 					</div>
 				</v-card>
 			</v-app>
 		</v-flex>
 
-		<v-dialog v-model="dialogInput" max-width="1000px">
+		<v-dialog v-model="dialogInput" max-width="1200" persistent="true">
 			<v-card>
 				<v-card-title>
 					<span class="headline">{{ formTitle }}</span>
@@ -58,29 +66,66 @@
 				<v-card-text>
 					<v-container grid-list-md>
 						<v-layout wrap>
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="brand.name" :counter="10" :error-messages="errors.collect('name')"
-								 :label="`${$t('brand_name')}`" data-vv-name="name" required></v-text-field>
+							<v-flex xs12 sm6 md6>
+								<multiselect placeholder="Select Product" data-vv-name="category"
+									v-model="selectedCategory" track-by="id" label="name" :options="categories"
+									@select="onSelectCategory" v-validate="'required'">
+								</multiselect>
+								<span class="v-messages error--text"
+									v-show="errors.has('category')">{{ errors.first('category') }}</span>
 							</v-flex>
-							<v-flex xs12 sm12 md12>
-								<v-textarea v-model="brand.description" :counter="10" :error-messages="errors.collect('description')" :label="`${$t('brand_description')}`"
-								 data-vv-name="description" required></v-textarea>
+
+							<v-flex xs12 sm6 md6>
+								<multiselect placeholder="Select Seller" data-vv-name="category"
+									v-model="selectedCategory" track-by="id" label="name" :options="categories"
+									@select="onSelectCategory" v-validate="'required'">
+								</multiselect>
+								<span class="v-messages error--text"
+									v-show="errors.has('category')">{{ errors.first('category') }}</span>
+							</v-flex>
+
+							<v-flex xs12 sm6 md4>
+								<v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent lazy
+									full-width width="290px">
+									<v-text-field slot="activator" v-model="date" label="Picker in dialog"
+										prepend-icon="event" readonly></v-text-field>
+									<v-date-picker v-model="date" scrollable>
+										<v-spacer></v-spacer>
+										<v-btn flat color="primary" @click="modal = false">Cancel</v-btn>
+										<v-btn flat color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
+									</v-date-picker>
+								</v-dialog>
 							</v-flex>
 
 							<v-flex xs12 sm12 md12>
-								<img :src="logo.imgInput" height="150" v-if="logo.imgInput" />
-								<v-text-field :label="`${$t('brand_logo')}`" @click='pickFileLogo' v-model='logo.imageName' prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="logo" accept="image/*" @change="onFilePickedLogo">
+								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
+									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
+									name="name" data-vv-as="name"></v-text-field>
 							</v-flex>
 
 							<v-flex xs12 sm12 md12>
-								<img :src="banner.imgInput" height="150" v-if="banner.imgInput" />
-								<v-text-field :label="`${$t('brand_banner')}`" @click='pickFileBanner()' v-model='banner.imageName'
-								 prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="banner" accept="image/*" @change="onFilePickedBanner">
+								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
+									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
+									name="name" data-vv-as="name"></v-text-field>
 							</v-flex>
 
-							<v-checkbox :label="`${$t('brand_active')}: ${brand.active}`" v-model="brand.active"></v-checkbox>
+							<v-flex xs12 sm12 md12>
+								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
+									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
+									name="name" data-vv-as="name"></v-text-field>
+							</v-flex>
+
+							<v-flex xs12 sm12 md12>
+								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
+									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
+									name="name" data-vv-as="name"></v-text-field>
+							</v-flex>
+
+
+
+							<v-checkbox :label="`${$t('product_active')}: ${product.active}`" v-model="product.active">
+							</v-checkbox>
+							<v-checkbox :label="`${$t('New')}: ${product.new}`" v-model="product.new"></v-checkbox>
 						</v-layout>
 					</v-container>
 				</v-card-text>
@@ -110,58 +155,124 @@
 			</v-card>
 		</v-dialog>
 
-		<v-snackbar v-model="snackbar.active" :bottom="snackbar.y === 'bottom'" :left="snackbar.x === 'left'" :multi-line="snackbar.mode === 'multi-line'"
-		 :right="snackbar.x === 'right'" :timeout="snackbar.timeout" :top="snackbar.y === 'top'" :vertical="snackbar.mode === 'vertical'">
+		<v-snackbar v-model="snackbar.active" :bottom="snackbar.y === 'bottom'" :left="snackbar.x === 'left'"
+			:multi-line="snackbar.mode === 'multi-line'" :right="snackbar.x === 'right'" :timeout="snackbar.timeout"
+			:top="snackbar.y === 'top'" :vertical="snackbar.mode === 'vertical'">
 			{{ snackbar.message }}
 			<v-btn color="pink" flat @click="snackbar.active = false">Close</v-btn>
 		</v-snackbar>
 	</v-layout>
 </template>
 
+<style>
+	#my-strictly-unique-vue-upload-multiple-image {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-align: center;
+		color: #2c3e50;
+		margin-top: 60px;
+	}
+
+	.multiple-image h1,
+	h2 {
+		font-weight: normal;
+	}
+
+	.multiple-image ul {
+		list-style-type: none;
+		padding: 0;
+	}
+
+	.multiple-image li {
+		display: inline-block;
+		margin: 0 0px;
+	}
+
+	.multiple-image a {
+		color: #42b983;
+	}
+</style>
+
 <script>
 	import Multiselect from 'vue-multiselect'
+	import VueUploadMultipleImage from 'vue-upload-multiple-image'
 
 	export default {
 		name: "settings-view",
 		components: {
-			Multiselect
+			Multiselect,
+			VueUploadMultipleImage
 		},
 		data() {
 			return {
-				loading: true,
-				rowsPerPageItems: [10, 20, 30, 40],
-				pagination: {
-					rowsPerPage: 10
+				product: {
+					specification: {}
 				},
+				loading: false,
+				dialog: false,
 				headers: [
-					{ text: 'Name', align: 'left', value: 'name' },
-					{ text: 'Description', align: 'left', value: 'description' },
-					{ text: 'Created At', align: 'center', value: 'created_at' },
-					{ text: 'Updated At', align: 'center', value: 'updated_at' },
-					{ text: 'Active', align: 'center', value: 'active' },
-					{ text: "Actions", align: 'center', sortable: false }
+					{
+						text: 'Name',
+						value: 'name'
+					},
+					{
+						text: 'Category',
+						value: 'category'
+					},
+					{
+						text: 'Image',
+						value: 'image',
+						align: 'center'
+					},
+					{
+						text: 'Active',
+						value: 'active'
+					},
+					{
+						text: 'Created At',
+						value: 'created_at'
+					},
+					{
+						text: "Actions",
+						value: "name",
+						sortable: false
+					}
 				],
-				brand: {},
-				search: "",
-				dialogInput: false,
-				brands: [],
-				totalItems: 0,
-				lastPage: 0,
+				desserts: [],
+				editedIndex: -1,
+				editedItem: {
+					name: "",
+					calories: 0,
+					fat: 0,
+					carbs: 0,
+					protein: 0
+				},
+				defaultItem: {
+					name: "",
+					calories: 0,
+					fat: 0,
+					carbs: 0,
+					protein: 0
+				},
+				search: '',
+				subCategories: [],
 				dialogConfirmDelete: false,
 				edit: false,
 				dialogInput: false,
 				selectedCategory: null,
+				selectedSubCategory: null,
 				categories: [],
-				logo: {
-					imageName: "",
-					imgInput: "",
-					imageFile: "",
-				},
-				banner: {
-					imageName: "",
-					imgInput: "",
-					imageFile: "",
-				},
+				selectedBrand: null,
+				brands: [],
+				categoryWiseSpecifications: [],
+				productSpecifications: {},
+				products: [],
+				productWiseSpecifications: [],
+				MAX_UPLOAD: 5,
+				UPLOAD_TEXT: 'Click Here To Upload',
+				DRAG_TEXT: 'Drag & Drop Files',
+				images: [],
 				snackbar: {
 					active: false,
 					y: 'bottom',
@@ -170,8 +281,18 @@
 					timeout: 3000,
 					message: ''
 				},
-				formTitle: ''
+				formTitle: '',
+				rowsPerPageItems: [10, 20, 30, 40],
+				pagination: {
+					rowsPerPage: 10
+				},
+				totalItems: 0,
+				lastPage: 0,
+				date: new Date().toISOString().substr(0, 10),
+				modal: false,
 			}
+		},
+		computed: {
 		},
 		watch: {
 			pagination() {
@@ -179,36 +300,58 @@
 			}
 		},
 		created() {
-			console.log(this.$store.state)
-			//this.fetchAll()
+			this.pagination.sortBy = 'created_at'
+			this.pagination.descending = 'true'
+			this.fetchAll()
+			this.fetchCategories()
+			this.fetchBrands()
+
 		},
 		methods: {
-			pickLogo() {
-				this.$refs.logo.click()
-			},
-			pickBanner() {
-				this.$refs.banner.click()
-			},
+			editItem(item) {
+				this.product = Object.assign({}, item)
+				//this.imgInput = this.product.image
+				this.selectedCategory = this.categories.find(x => x.id === this.product.category.id)
+				this.selectedSubCategory = this.subCategories.find(x => x.id === this.product.sub_category_id)
+				this.selectedBrand = this.brands.find(x => x.id === this.product.brand_id)
+				this.fetchProductWiseSpecifications(this.product.id)
+				this.fetchCategoryWiseSpecifications(this.product.category.id)
+				this.dialogInput = true
+				this.edit = true
+				this.productSpecifications = {}
 
+				let images = this.product.image.split(',')
+				images.forEach(element => {
+					this.images.push({
+						path: element,
+						default: 1,
+						highlight: 1,
+						caption: 'caption to display. receive',
+					})
+				})
+			},
+			deleteItem(item) {
+				this.dialogConfirmDelete = true
+				this.product = item
+			},
 			close() {
 				this.dialogInput = false
 				setTimeout(() => {
 					this.editedItem = Object.assign({}, this.defaultItem)
+					this.editedIndex = -1
 				}, 300)
 			},
 			save() {
+				this.product.specification = this.productSpecifications
 				this.$validator.validate().then(result => {
 					if (result) {
 						this.loading = true
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							this.brand.updated_by = 0
-
-							axios.put('/api/brand', this.brand)
+							axios.put('/api/product', this.product)
 								.then(
 									(response) => {
-										this.showSnackbar('Item updated successfully !')
-										this.loading = false
+										this.showSnackbar('Item Updated Successfully')
 										console.log(response)
 										this.fetchAll()
 									}
@@ -219,14 +362,17 @@
 									}
 								)
 						} else {
+							//this.desserts.push(this.editedItem)
 							console.log('save', this.editedItem)
-							this.brand.created_by = 0
-							this.brand.updated_by = 0
-							axios.post('/api/brand', this.brand)
+
+
+							this.product.created_by = 0
+							this.product.updated_by = 0
+
+							axios.post('/api/product', this.product)
 								.then(
 									(response) => {
-										this.showSnackbar('Item added successfully !')
-										this.loading = false
+										this.showSnackbar('Item Added Successfully')
 										console.log(response)
 										this.fetchAll()
 									}
@@ -238,54 +384,19 @@
 								)
 						}
 						this.close()
+						this.loading = false
 						this.edit = false
+						this.productSpecifications = {}
+					}
+					else {
+						console.log('validation failed')
 					}
 				})
-			},
-			onLogoPicked(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo = files[0].name
-					if (this.logo.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0] 
-						this.brand.logo = this.logo.imgInput
-					})
-				} else {
-					this.logo = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
-				}
-			},
-			onBannerPicked(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo = files[0].name
-					if (this.logo.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0] 
-						this.brand.banner = this.logo.imgInput
-					})
-				} else {
-					this.logo = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
-				}
 			},
 			fetchAll() {
 				console.log(this.pagination)
 				this.loading = true
-				let url = `/api/brands-datatable`
+				let url = `/api/products-datatable`
 				let params = `?page=${this.pagination.page}
 								&rowsPerPage=${this.pagination.rowsPerPage}
 								&sortBy=${this.pagination.sortBy}
@@ -294,7 +405,7 @@
 
 				axios.get(url + params)
 					.then(response => {
-						this.brands = response.data.data
+						this.products = response.data.data
 						this.totalItems = response.data.meta.total
 						this.lastPage = response.data.meta.last_page
 						console.log(response.data)
@@ -304,7 +415,7 @@
 						if (error.response) {
 							console.log(error.response);
 							if (error.response.status === 401) {
-								window.location.href = '/login'
+								window.location.href = '/admin/login'
 							}
 						}
 					})
@@ -312,11 +423,10 @@
 			erase() {
 				this.dialogConfirmDelete = false
 				this.loading = true
-				axios.delete(`/api/brand/${this.brand.id}`)
+				axios.delete(`/api/product/${this.product.id}`)
 					.then(response => {
 						this.loading = false
 						this.fetchAll()
-						this.showSnackbar('Item deleated successfully !')
 					})
 					.catch(error => {
 						if (error.response) {
@@ -325,76 +435,143 @@
 					})
 			},
 			addNew() {
-				this.formTitle = "Add Item"
-				this.brand = { active: true }
-				this.logo.imgInput = ``
+				this.product = { image: null, active: true, new: true }
+				this.imgInput = ``
 				this.selectedCategory = null
+				this.selectedSubCategory = null
+				this.selectedBrand = null
 				this.dialogInput = true
-				this.edit = false
-				this.logo.imageName = null
-				this.banner.imageName = null
-				this.logo.imgInput = null
-				this.banner.imgInput = null
+				this.edit = false,
+					this.imageName = null
 			},
-			editItem(item) {
-				this.formTitle = "Edit Item"
-				this.brand = Object.assign({}, item)
-				this.dialogInput = true
-				this.edit = true
-				this.logo.imageName = null
-				this.logo.imgInput = this.brand.logo
-				this.banner.imageName = null
-				this.banner.imgInput = this.brand.banner
-			},
-			deleteItem(item) {
-				this.dialogConfirmDelete = true
-				this.brand = item
-			},
-			pickFileLogo() {
-				this.$refs.logo.click()
-			},
-			onFilePickedLogo(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo.imageName = files[0].name
-					if (this.logo.imageName.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0]
-						this.brand.logo = this.logo.imgInput
-					})
-				} else {
-					this.logo.imageName = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
+			onSelectCategory(selectedOption, id) {
+				if (selectedOption) {
+					this.product.category_id = selectedOption.id
+					console.log(selectedOption.id)
+					this.fetchSubCategories(selectedOption.id)
+					this.fetchCategoryWiseSpecifications(selectedOption.id)
 				}
 			},
-			pickFileBanner() {
-				this.$refs.banner.click()
-			},
-			onFilePickedBanner(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.banner.imageName = files[0].name
-					if (this.banner.imageName.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.banner.imgInput = fr.result
-						this.banner.imageFile = files[0]
-						this.brand.banner = this.banner.imgInput
+			fetchProducts() {
+				this.loading = true
+				axios.get(`/api/products`)
+					.then(response => {
+						this.products = response.data.data
+						console.log(response.data.data)
+						this.loading = false
 					})
-				} else {
-					this.banner.imageName = ""
-					this.banner.imageFile = ""
-					this.banner.imgInput = ""
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			onSelectSubCategory(selectedOption, id) {
+				if (selectedOption) {
+					this.product.sub_category_id = selectedOption.id
 				}
+			},
+			fetchSubCategories(categoryId) {
+				this.loading = true
+				axios.get(`/api/sub-category/${categoryId}/category`)
+					.then(response => {
+						this.subCategories = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			onSelectBrand(selectedOption, id) {
+				if (selectedOption) {
+					this.product.brand_id = selectedOption.id
+				}
+			},
+			fetchBrands() {
+				this.loading = true
+				axios.get(`/api/brands`)
+					.then(response => {
+						this.brands = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			fetchCategoryWiseSpecifications(catgoryId) {
+				this.loading = true
+				axios.get(`/api/category-wise-specification/${catgoryId}/category`)
+					.then(response => {
+						this.categoryWiseSpecifications = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			fetchProductWiseSpecifications(productId) {
+				this.loading = true
+				axios.get(`/api/product-wise-specification/${productId}/product`)
+					.then(response => {
+						this.productWiseSpecifications = response.data.data
+
+						let temp = {}
+
+						this.productSpecifications = {}
+						this.productWiseSpecifications.forEach((element, index) => {
+							this.productSpecifications[element.specification_id] = element.description
+						})
+
+						console.log('check', this.productSpecifications)
+
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+
+			uploadImageSuccess(formData, index, fileList) {
+				console.log(fileList)
+				this.product.image = fileList
+				if (fileList.length > this.MAX_UPLOAD) {
+					alert('Max image limit  exceeded!')
+				}
+			},
+
+			beforeRemove(index, done, fileList) {
+				console.log('index', index, fileList)
+				var r = confirm("remove image")
+				if (r == true) {
+					done()
+					let images = []
+					fileList.forEach(element => {
+						images.push(element.path)
+					})
+					this.product.image = images.join()
+				}
+				else {
+				}
+			},
+
+			editImage(formData, index, fileList) {
+				console.log('edit data', formData, index, fileList)
+			},
+
+			dataChange(data) {
+				console.log(data)
 			},
 			datatbleSearch() {
 				if (this.search.length) {

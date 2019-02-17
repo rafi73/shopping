@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Seller;
+use App\Http\Resources\SellerResource;
 
 class SellerController extends Controller
 {
@@ -104,7 +106,9 @@ class SellerController extends Controller
         // Get Sellers   
         $query = Seller::where(function ($query) use($search) {
                             $query->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('description', 'like', '%' . $search . '%');
+                            ->orWhere('email', 'like', '%' . $search . '%')
+                            ->orWhere('company', 'like', '%' . $search . '%')
+                            ->orWhere('contact', 'like', '%' . $search . '%');
                         });
 
         if (isset($sortType)) 

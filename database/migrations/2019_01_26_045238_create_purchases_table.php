@@ -16,7 +16,7 @@ class CreatePurchasesTable extends Migration
         Schema::create('purchases', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('product_id');
-            $table->decimal('cost', 5,2); 
+            $table->decimal('cost_price', 5,2); 
             $table->decimal('selling_price', 5,2);
             $table->integer('seller_id'); 
             $table->boolean('active');

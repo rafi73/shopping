@@ -17,9 +17,9 @@ class CreateStocksTable extends Migration
             $table->increments('id');
             $table->integer('product_id');
             $table->integer('quantity');
-            $table->integer('batch');
+            $table->string('batch');
             $table->integer('seller_id');
-            $table->date('expiry_date');
+            $table->date('expiry_date')->nullable();
             $table->boolean('active');
             $table->integer('created_by');
             $table->integer('updated_by');

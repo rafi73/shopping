@@ -458,7 +458,7 @@
 						if (error.response) {
 							console.log(error.response);
 							if (error.response.status === 401) {
-								window.location.href = '/login'
+								window.location.href = '/admin/login'
 							}
 						}
 					})

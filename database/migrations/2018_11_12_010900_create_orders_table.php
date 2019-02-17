@@ -32,6 +32,7 @@ class CreateOrdersTable extends Migration
             $table->string('shipping_country')->nullable();
             $table->string('shipping_state')->nullable();
             $table->string('shipping_address')->nullable();
+            $table->boolean('active');
             $table->timestamps();
         });
     }

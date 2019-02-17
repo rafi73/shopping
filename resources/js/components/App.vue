@@ -90,9 +90,9 @@
                     NProgress.done()
                     localStorage.removeItem("token")
                     localStorage.removeItem("login")
-                    window.location.href = '/login'
+                    window.location.href = '/admin/login'
                     this.$store.commit('changeUser', null)
-                    window.location.href = '/login'
+                    window.location.href = '/admin/login'
                 })
                 .catch(error => {
                     if (error.response) {

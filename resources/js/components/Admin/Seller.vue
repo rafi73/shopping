@@ -26,10 +26,12 @@
 						</v-btn>
 					</v-card-title>
 
-					<v-data-table :headers="headers" :items="brands" :pagination.sync="pagination" :total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
+					<v-data-table :headers="headers" :items="sellers" :pagination.sync="pagination" :total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
 						<template slot="items" slot-scope="props">
 							<td>{{ props.item.name }}</td>
-							<td>{{ props.item.description }}</td>
+							<td>{{ props.item.email }}</td>
+							<td>{{ props.item.company }}</td>
+							<td>{{ props.item.contact }}</td>
 							<td class="text-xs-center">{{ props.item.created_at }}</td>
 							<td class="text-xs-center">{{ props.item.updated_at }}</td>
 							<td class="text-xs-center">{{ props.item.active }}</td>
@@ -59,28 +61,24 @@
 					<v-container grid-list-md>
 						<v-layout wrap>
 							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="brand.name" :counter="10" :error-messages="errors.collect('name')"
-								 :label="`${$t('brand_name')}`" data-vv-name="name" required></v-text-field>
+								<v-text-field v-validate="'required'" v-model="seller.name" :counter="10" :error-messages="errors.collect('name')"
+								 :label="`${$t('seller_name')}`" data-vv-name="name" required></v-text-field>
 							</v-flex>
 							<v-flex xs12 sm12 md12>
-								<v-textarea v-model="brand.description" :counter="10" :error-messages="errors.collect('description')" :label="`${$t('brand_description')}`"
-								 data-vv-name="description" required></v-textarea>
+								<v-text-field v-validate="'required'" v-model="seller.email" :counter="10" :error-messages="errors.collect('email')"
+								 :label="`${$t('seller_email')}`" data-vv-name="email" required></v-text-field>
 							</v-flex>
-
+							
 							<v-flex xs12 sm12 md12>
-								<img :src="logo.imgInput" height="150" v-if="logo.imgInput" />
-								<v-text-field :label="`${$t('brand_logo')}`" @click='pickFileLogo' v-model='logo.imageName' prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="logo" accept="image/*" @change="onFilePickedLogo">
+								<v-text-field v-validate="'required'" v-model="seller.company" :counter="10" :error-messages="errors.collect('company')"
+								 :label="`${$t('seller_company')}`" data-vv-name="company" required></v-text-field>
 							</v-flex>
-
 							<v-flex xs12 sm12 md12>
-								<img :src="banner.imgInput" height="150" v-if="banner.imgInput" />
-								<v-text-field :label="`${$t('brand_banner')}`" @click='pickFileBanner()' v-model='banner.imageName'
-								 prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="banner" accept="image/*" @change="onFilePickedBanner">
+								<v-text-field v-validate="'required'" v-model="seller.contact" :counter="10" :error-messages="errors.collect('contact')"
+								 :label="`${$t('seller_contact')}`" data-vv-name="contact" required></v-text-field>
 							</v-flex>
 
-							<v-checkbox :label="`${$t('brand_active')}: ${brand.active}`" v-model="brand.active"></v-checkbox>
+							<v-checkbox :label="`${$t('seller_active')}: ${seller.active}`" v-model="seller.active"></v-checkbox>
 						</v-layout>
 					</v-container>
 				</v-card-text>
@@ -135,16 +133,18 @@
 				},
 				headers: [
 					{ text: 'Name', align: 'left', value: 'name' },
-					{ text: 'Description', align: 'left', value: 'description' },
+					{ text: 'Email', align: 'left', value: 'email' },
+					{ text: 'Company', align: 'left', value: 'company' },
+					{ text: 'Contact', align: 'left', value: 'contact' },
 					{ text: 'Created At', align: 'center', value: 'created_at' },
 					{ text: 'Updated At', align: 'center', value: 'updated_at' },
 					{ text: 'Active', align: 'center', value: 'active' },
 					{ text: "Actions", align: 'center', sortable: false }
 				],
-				brand: {},
+				seller: {},
 				search: "",
 				dialogInput: false,
-				brands: [],
+				sellers: [],
 				totalItems: 0,
 				lastPage: 0,
 				dialogConfirmDelete: false,
@@ -202,9 +202,9 @@
 						this.loading = true
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							this.brand.updated_by = 0
+							this.seller.updated_by = 0
 
-							axios.put('/api/brand', this.brand)
+							axios.put('/api/seller', this.seller)
 								.then(
 									(response) => {
 										this.showSnackbar('Item updated successfully !')
@@ -220,9 +220,9 @@
 								)
 						} else {
 							console.log('save', this.editedItem)
-							this.brand.created_by = 0
-							this.brand.updated_by = 0
-							axios.post('/api/brand', this.brand)
+							this.seller.created_by = 0
+							this.seller.updated_by = 0
+							axios.post('/api/seller', this.seller)
 								.then(
 									(response) => {
 										this.showSnackbar('Item added successfully !')
@@ -254,7 +254,7 @@
 					fr.addEventListener("load", () => {
 						this.logo.imgInput = fr.result
 						this.logo.imageFile = files[0] 
-						this.brand.logo = this.logo.imgInput
+						this.seller.logo = this.logo.imgInput
 					})
 				} else {
 					this.logo = ""
@@ -274,7 +274,7 @@
 					fr.addEventListener("load", () => {
 						this.logo.imgInput = fr.result
 						this.logo.imageFile = files[0] 
-						this.brand.banner = this.logo.imgInput
+						this.seller.banner = this.logo.imgInput
 					})
 				} else {
 					this.logo = ""
@@ -285,7 +285,7 @@
 			fetchAll() {
 				console.log(this.pagination)
 				this.loading = true
-				let url = `/api/brands-datatable`
+				let url = `/api/sellers-datatable`
 				let params = `?page=${this.pagination.page}
 								&rowsPerPage=${this.pagination.rowsPerPage}
 								&sortBy=${this.pagination.sortBy}
@@ -294,17 +294,18 @@
 
 				axios.get(url + params)
 					.then(response => {
-						this.brands = response.data.data
+						this.sellers = response.data.data
 						this.totalItems = response.data.meta.total
 						this.lastPage = response.data.meta.last_page
 						console.log(response.data)
 						this.loading = false
 					})
 					.catch(error => {
+						debugger
 						if (error.response) {
 							console.log(error.response);
 							if (error.response.status === 401) {
-								window.location.href = '/login'
+								window.location.href = '/admin/login'
 							}
 						}
 					})
@@ -312,7 +313,7 @@
 			erase() {
 				this.dialogConfirmDelete = false
 				this.loading = true
-				axios.delete(`/api/brand/${this.brand.id}`)
+				axios.delete(`/api/seller/${this.seller.id}`)
 					.then(response => {
 						this.loading = false
 						this.fetchAll()
@@ -326,7 +327,7 @@
 			},
 			addNew() {
 				this.formTitle = "Add Item"
-				this.brand = { active: true }
+				this.seller = { active: true }
 				this.logo.imgInput = ``
 				this.selectedCategory = null
 				this.dialogInput = true
@@ -338,17 +339,17 @@
 			},
 			editItem(item) {
 				this.formTitle = "Edit Item"
-				this.brand = Object.assign({}, item)
+				this.seller = Object.assign({}, item)
 				this.dialogInput = true
 				this.edit = true
 				this.logo.imageName = null
-				this.logo.imgInput = this.brand.logo
+				this.logo.imgInput = this.seller.logo
 				this.banner.imageName = null
-				this.banner.imgInput = this.brand.banner
+				this.banner.imgInput = this.seller.banner
 			},
 			deleteItem(item) {
 				this.dialogConfirmDelete = true
-				this.brand = item
+				this.seller = item
 			},
 			pickFileLogo() {
 				this.$refs.logo.click()
@@ -365,7 +366,7 @@
 					fr.addEventListener("load", () => {
 						this.logo.imgInput = fr.result
 						this.logo.imageFile = files[0]
-						this.brand.logo = this.logo.imgInput
+						this.seller.logo = this.logo.imgInput
 					})
 				} else {
 					this.logo.imageName = ""
@@ -388,7 +389,7 @@
 					fr.addEventListener("load", () => {
 						this.banner.imgInput = fr.result
 						this.banner.imageFile = files[0]
-						this.brand.banner = this.banner.imgInput
+						this.seller.banner = this.banner.imgInput
 					})
 				} else {
 					this.banner.imageName = ""
