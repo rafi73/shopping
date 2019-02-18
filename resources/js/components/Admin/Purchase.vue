@@ -6,15 +6,15 @@
 					<v-card-title class="grey lighten-4">
 						<v-icon class="pr-2">
 							{{ $route.meta.icon }}
-						</v-icon> 
+						</v-icon>
 						<h3 class="headline mb-0">{{ $route.meta.name }}</h3>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
 						<v-spacer></v-spacer>
-						<v-text-field v-on:keyup.enter="fetchAll()" v-model="search" md4 append-icon="search" label="Search" single-line
-						 hide-details></v-text-field>
+						<v-text-field v-on:keyup.enter="fetchAll()" v-model="search" md4 append-icon="search"
+							label="Search" single-line hide-details></v-text-field>
 						<v-btn @click.prevent="datatbleSearch()" fab dark small color="primary">
 							<v-icon dark>search</v-icon>
 						</v-btn>
@@ -26,14 +26,18 @@
 						</v-btn>
 					</v-card-title>
 
-					<v-data-table :headers="headers" :items="brands" :pagination.sync="pagination" :total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
+
+					<v-data-table :headers="headers" :items="purchases" :pagination.sync="pagination"
+						:total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
 						<template slot="items" slot-scope="props">
-							<td>{{ props.item.name }}</td>
-							<td>{{ props.item.description }}</td>
-							<td class="text-xs-center">{{ props.item.created_at }}</td>
-							<td class="text-xs-center">{{ props.item.updated_at }}</td>
-							<td class="text-xs-center">{{ props.item.active }}</td>
-							<td class="text-xs-center">
+							<td>{{ props.item.batch}}</td>
+							<td class="text-xs-right">{{ props.item.quantity}}</td>
+							<td>{{ props.item.product.name }}</td>
+							<td>{{ props.item.seller.name }}</td>
+							<td>{{ props.item.expiry_date }}</td>
+							<td>{{ props.item.active }}</td>
+							<td>{{ props.item.created_at }}</td>
+							<td>
 								<v-icon small class="mr-2" @click="editItem(props.item)">
 									edit
 								</v-icon>
@@ -44,13 +48,14 @@
 						</template>
 					</v-data-table>
 					<div class="mb-2 text-xs-center">
-						<v-pagination v-model="pagination.page" :length="lastPage" :total-visible="8" @input="next" circle></v-pagination>
+						<v-pagination v-model="pagination.page" :length="lastPage" :total-visible="8" @input="next"
+							circle></v-pagination>
 					</div>
 				</v-card>
 			</v-app>
 		</v-flex>
 
-		<v-dialog v-model="dialogInput" max-width="1000px">
+		<v-dialog v-model="dialogInput" max-width="1200" persistent>
 			<v-card>
 				<v-card-title>
 					<span class="headline">{{ formTitle }}</span>
@@ -58,29 +63,40 @@
 				<v-card-text>
 					<v-container grid-list-md>
 						<v-layout wrap>
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="brand.name" :counter="10" :error-messages="errors.collect('name')"
-								 :label="`${$t('brand_name')}`" data-vv-name="name" required></v-text-field>
-							</v-flex>
-							<v-flex xs12 sm12 md12>
-								<v-textarea v-model="brand.description" :counter="10" :error-messages="errors.collect('description')" :label="`${$t('brand_description')}`"
-								 data-vv-name="description" required></v-textarea>
-							</v-flex>
-
-							<v-flex xs12 sm12 md12>
-								<img :src="logo.imgInput" height="150" v-if="logo.imgInput" />
-								<v-text-field :label="`${$t('brand_logo')}`" @click='pickFileLogo' v-model='logo.imageName' prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="logo" accept="image/*" @change="onFilePickedLogo">
+							<v-flex xs12 sm6 md6>
+								<multiselect placeholder="Select purchase" data-vv-name="product"
+									v-model="selectedProduct" track-by="id" label="name" :options="products"
+									@select="onSelectProduct" v-validate="'required'">
+								</multiselect>
+								<span class="v-messages error--text"
+									v-show="errors.has('product')">{{ errors.first('product') }}</span>
+									
 							</v-flex>
 
-							<v-flex xs12 sm12 md12>
-								<img :src="banner.imgInput" height="150" v-if="banner.imgInput" />
-								<v-text-field :label="`${$t('brand_banner')}`" @click='pickFileBanner()' v-model='banner.imageName'
-								 prepend-icon='attach_file'></v-text-field>
-								<input type="file" style="display: none" ref="banner" accept="image/*" @change="onFilePickedBanner">
+							<v-flex xs12 sm6 md6>
+								<multiselect placeholder="Select Seller" data-vv-name="seller"
+									v-model="selectedSeller" track-by="id" label="name" :options="sellers"
+									@select="onSelectSeller" v-validate="'required'">
+								</multiselect>
+								<span class="v-messages error--text"
+									v-show="errors.has('seller')">{{ errors.first('seller') }}</span>
 							</v-flex>
 
-							<v-checkbox :label="`${$t('brand_active')}: ${brand.active}`" v-model="brand.active"></v-checkbox>
+							
+							<v-flex xs12 sm6 md6>
+								<v-text-field v-validate="'required|decimal:2'" v-model="purchase.cost_price" :counter="300"
+									:error-messages="errors.collect('cost_price')" :label="`${ $t('purchase_cost_price')}`"
+									name="cost_price" data-vv-as="cost_price"></v-text-field>
+							</v-flex>
+
+							<v-flex xs12 sm6 md6>
+								<v-text-field v-validate="'required|decimal:2'" v-model="purchase.selling_price" :counter="300"
+									:error-messages="errors.collect('selling_price')" :label="`${ $t('purchase_selling_price')}`"
+									name="selling_price" data-vv-as="selling_price"></v-text-field>
+							</v-flex>
+
+							<v-checkbox :label="`${$t('purchase_active')}: ${purchase.active}`" v-model="purchase.active">
+							</v-checkbox>
 						</v-layout>
 					</v-container>
 				</v-card-text>
@@ -110,58 +126,76 @@
 			</v-card>
 		</v-dialog>
 
-		<v-snackbar v-model="snackbar.active" :bottom="snackbar.y === 'bottom'" :left="snackbar.x === 'left'" :multi-line="snackbar.mode === 'multi-line'"
-		 :right="snackbar.x === 'right'" :timeout="snackbar.timeout" :top="snackbar.y === 'top'" :vertical="snackbar.mode === 'vertical'">
+		<v-snackbar v-model="snackbar.active" :bottom="snackbar.y === 'bottom'" :left="snackbar.x === 'left'"
+			:multi-line="snackbar.mode === 'multi-line'" :right="snackbar.x === 'right'" :timeout="snackbar.timeout"
+			:top="snackbar.y === 'top'" :vertical="snackbar.mode === 'vertical'">
 			{{ snackbar.message }}
 			<v-btn color="pink" flat @click="snackbar.active = false">Close</v-btn>
 		</v-snackbar>
 	</v-layout>
 </template>
 
+<style>
+	#my-strictly-unique-vue-upload-multiple-image {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-align: center;
+		color: #2c3e50;
+		margin-top: 60px;
+	}
+
+	.multiple-image h1,
+	h2 {
+		font-weight: normal;
+	}
+
+	.multiple-image ul {
+		list-style-type: none;
+		padding: 0;
+	}
+
+	.multiple-image li {
+		display: inline-block;
+		margin: 0 0px;
+	}
+
+	.multiple-image a {
+		color: #42b983;
+	}
+</style>
+
 <script>
 	import Multiselect from 'vue-multiselect'
+	import VueUploadMultipleImage from 'vue-upload-multiple-image'
 
 	export default {
 		name: "settings-view",
 		components: {
-			Multiselect
+			Multiselect,
+			VueUploadMultipleImage
 		},
 		data() {
 			return {
-				loading: true,
-				rowsPerPageItems: [10, 20, 30, 40],
-				pagination: {
-					rowsPerPage: 10
+				purchase: {
+					expiry_date: this.$moment().format("YYYY-MM-DD"),
 				},
+				loading: false,
+				dialog: false,
 				headers: [
-					{ text: 'Name', align: 'left', value: 'name' },
-					{ text: 'Description', align: 'left', value: 'description' },
-					{ text: 'Created At', align: 'center', value: 'created_at' },
-					{ text: 'Updated At', align: 'center', value: 'updated_at' },
-					{ text: 'Active', align: 'center', value: 'active' },
-					{ text: "Actions", align: 'center', sortable: false }
+					{ text: 'Batch', value: 'batch' },
+					{ text: 'Quantity', value: 'quantity', align: 'right' },
+					{ text: 'Product', value: 'product', sortable: false },
+					{ text: 'Seller', value: 'seller', sortable: false },
+					{ text: 'Expiry Date', value: 'expiry_date' },
+					{ text: 'Active', value: 'active' },
+					{ text: 'Created At', value: 'created_at' },
+					{ text: "Actions", value: "name", sortable: false }
 				],
-				brand: {},
-				search: "",
-				dialogInput: false,
-				brands: [],
-				totalItems: 0,
-				lastPage: 0,
+				search: '',
 				dialogConfirmDelete: false,
 				edit: false,
 				dialogInput: false,
-				selectedCategory: null,
-				categories: [],
-				logo: {
-					imageName: "",
-					imgInput: "",
-					imageFile: "",
-				},
-				banner: {
-					imageName: "",
-					imgInput: "",
-					imageFile: "",
-				},
 				snackbar: {
 					active: false,
 					y: 'bottom',
@@ -170,8 +204,22 @@
 					timeout: 3000,
 					message: ''
 				},
-				formTitle: ''
+				formTitle: '',
+				rowsPerPageItems: [10, 20, 30, 40],
+				pagination: {
+					rowsPerPage: 10
+				},
+				totalItems: 0,
+				lastPage: 0,
+				modal: false,
+				selectedProduct: {},
+				products: [],
+				selectedSeller: {},
+				sellers: [],
+				purchases: []
 			}
+		},
+		computed: {
 		},
 		watch: {
 			pagination() {
@@ -179,36 +227,43 @@
 			}
 		},
 		created() {
-			console.log(this.$store.state)
-			//this.fetchAll()
+			this.pagination.sortBy = 'created_at'
+			this.pagination.descending = 'true'
+			this.fetchAll()
+
+			console.log(this.$moment().format("YYYY-MM-DD"))
 		},
 		methods: {
-			pickLogo() {
-				this.$refs.logo.click()
+			editItem(item) {
+				this.purchase = Object.assign({}, item)
+				this.selectedProduct =  this.purchase.product
+				this.selectedSeller = this.purchase.seller
+				this.dialogInput = true
+				this.edit = true
 			},
-			pickBanner() {
-				this.$refs.banner.click()
+			deleteItem(item) {
+				this.dialogConfirmDelete = true
+				this.purchase = item
 			},
-
 			close() {
 				this.dialogInput = false
 				setTimeout(() => {
 					this.editedItem = Object.assign({}, this.defaultItem)
+					this.editedIndex = -1
 				}, 300)
 			},
 			save() {
 				this.$validator.validate().then(result => {
 					if (result) {
 						this.loading = true
+						this.purchase.updated_by = this.$store.state.currentUser.id
+
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							this.brand.updated_by = this.$store.state.currentUser.id
-
-							axios.put('/api/brand', this.brand)
+							axios.put('/api/purchase', this.purchase)
 								.then(
 									(response) => {
-										this.showSnackbar('Item updated successfully !')
-										this.loading = false
+										this.showSnackbar('Updated successfully')
 										console.log(response)
 										this.fetchAll()
 									}
@@ -219,14 +274,12 @@
 									}
 								)
 						} else {
-							console.log('save', this.editedItem)
-							this.brand.created_by = this.$store.state.currentUser.id
-							this.brand.updated_by = this.$store.state.currentUser.id
-							axios.post('/api/brand', this.brand)
+							this.purchase.created_by = this.$store.state.currentUser.id
+							
+							axios.post('/api/purchase', this.purchase)
 								.then(
 									(response) => {
-										this.showSnackbar('Item added successfully !')
-										this.loading = false
+										this.showSnackbar('Item added')
 										console.log(response)
 										this.fetchAll()
 									}
@@ -238,54 +291,19 @@
 								)
 						}
 						this.close()
+						this.loading = false
 						this.edit = false
+						this.purchaseSpecifications = {}
+					}
+					else {
+						console.log('validation failed')
 					}
 				})
-			},
-			onLogoPicked(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo = files[0].name
-					if (this.logo.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0] 
-						this.brand.logo = this.logo.imgInput
-					})
-				} else {
-					this.logo = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
-				}
-			},
-			onBannerPicked(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo = files[0].name
-					if (this.logo.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0] 
-						this.brand.banner = this.logo.imgInput
-					})
-				} else {
-					this.logo = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
-				}
 			},
 			fetchAll() {
 				console.log(this.pagination)
 				this.loading = true
-				let url = `/api/brands-datatable`
+				let url = `/api/purchases-datatable`
 				let params = `?page=${this.pagination.page}
 								&rowsPerPage=${this.pagination.rowsPerPage}
 								&sortBy=${this.pagination.sortBy}
@@ -294,7 +312,7 @@
 
 				axios.get(url + params)
 					.then(response => {
-						this.brands = response.data.data
+						this.purchases = response.data.data
 						this.totalItems = response.data.meta.total
 						this.lastPage = response.data.meta.last_page
 						console.log(response.data)
@@ -312,11 +330,10 @@
 			erase() {
 				this.dialogConfirmDelete = false
 				this.loading = true
-				axios.delete(`/api/brand/${this.brand.id}`)
+				axios.delete(`/api/purchase/${this.purchase.id}`)
 					.then(response => {
 						this.loading = false
 						this.fetchAll()
-						this.showSnackbar('Item deleated successfully !')
 					})
 					.catch(error => {
 						if (error.response) {
@@ -325,76 +342,162 @@
 					})
 			},
 			addNew() {
-				this.formTitle = "Add Item"
-				this.brand = { active: true }
-				this.logo.imgInput = ``
-				this.selectedCategory = null
+				this.formTitle = 'Add new item'
+				this.purchase = { batch: Math.random().toString(36).substring(7), active: true }
+				this.selectedProduct = null
+				this.selectedSeller = null
+				this.selectedBrand = null
 				this.dialogInput = true
 				this.edit = false
-				this.logo.imageName = null
-				this.banner.imageName = null
-				this.logo.imgInput = null
-				this.banner.imgInput = null
+
+
+				this.fetchProducts()
+				this.fetchSellers()
 			},
-			editItem(item) {
-				this.formTitle = "Edit Item"
-				this.brand = Object.assign({}, item)
-				this.dialogInput = true
-				this.edit = true
-				this.logo.imageName = null
-				this.logo.imgInput = this.brand.logo
-				this.banner.imageName = null
-				this.banner.imgInput = this.brand.banner
-			},
-			deleteItem(item) {
-				this.dialogConfirmDelete = true
-				this.brand = item
-			},
-			pickFileLogo() {
-				this.$refs.logo.click()
-			},
-			onFilePickedLogo(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.logo.imageName = files[0].name
-					if (this.logo.imageName.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.logo.imgInput = fr.result
-						this.logo.imageFile = files[0]
-						this.brand.logo = this.logo.imgInput
-					})
-				} else {
-					this.logo.imageName = ""
-					this.logo.imageFile = ""
-					this.logo.imgInput = ""
+			onSelectProduct(selectedOption, id) {
+				if (selectedOption) {
+					this.purchase.product_id = selectedOption.id
 				}
 			},
-			pickFileBanner() {
-				this.$refs.banner.click()
-			},
-			onFilePickedBanner(e) {
-				const files = e.target.files
-				if (files[0] !== undefined) {
-					this.banner.imageName = files[0].name
-					if (this.banner.imageName.lastIndexOf(".") <= 0) {
-						return
-					}
-					const fr = new FileReader()
-					fr.readAsDataURL(files[0])
-					fr.addEventListener("load", () => {
-						this.banner.imgInput = fr.result
-						this.banner.imageFile = files[0]
-						this.brand.banner = this.banner.imgInput
-					})
-				} else {
-					this.banner.imageName = ""
-					this.banner.imageFile = ""
-					this.banner.imgInput = ""
+			onSelectSeller(selectedOption, id) {
+				if (selectedOption) {
+					this.purchase.seller_id = selectedOption.id
 				}
+			},
+			fetchSellers() {
+				this.loading = true
+				axios.get(`/api/sellers`)
+					.then(response => {
+						this.sellers = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			fetchProducts() {
+				this.loading = true
+				axios.get(`/api/products`)
+					.then(response => {
+						this.products = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			onSelectSubCategory(selectedOption, id) {
+				if (selectedOption) {
+					this.purchase.sub_category_id = selectedOption.id
+				}
+			},
+			fetchSubCategories(categoryId) {
+				this.loading = true
+				axios.get(`/api/sub-category/${categoryId}/category`)
+					.then(response => {
+						this.subCategories = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			onSelectBrand(selectedOption, id) {
+				if (selectedOption) {
+					this.purchase.brand_id = selectedOption.id
+				}
+			},
+			fetchBrands() {
+				this.loading = true
+				axios.get(`/api/brands`)
+					.then(response => {
+						this.brands = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			fetchCategoryWiseSpecifications(catgoryId) {
+				this.loading = true
+				axios.get(`/api/category-wise-specification/${catgoryId}/category`)
+					.then(response => {
+						this.categoryWiseSpecifications = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+			fetchpurchaseWiseSpecifications(purchaseId) {
+				this.loading = true
+				axios.get(`/api/purchase-wise-specification/${purchaseId}/purchase`)
+					.then(response => {
+						this.purchaseWiseSpecifications = response.data.data
+
+						let temp = {}
+
+						this.purchaseSpecifications = {}
+						this.purchaseWiseSpecifications.forEach((element, index) => {
+							this.purchaseSpecifications[element.specification_id] = element.description
+						})
+
+						console.log('check', this.purchaseSpecifications)
+
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
+			},
+
+			uploadImageSuccess(formData, index, fileList) {
+				console.log(fileList)
+				this.purchase.image = fileList
+				if (fileList.length > this.MAX_UPLOAD) {
+					alert('Max image limit  exceeded!')
+				}
+			},
+
+			beforeRemove(index, done, fileList) {
+				console.log('index', index, fileList)
+				var r = confirm("remove image")
+				if (r == true) {
+					done()
+					let images = []
+					fileList.forEach(element => {
+						images.push(element.path)
+					})
+					this.purchase.image = images.join()
+				}
+				else {
+				}
+			},
+
+			editImage(formData, index, fileList) {
+				console.log('edit data', formData, index, fileList)
+			},
+
+			dataChange(data) {
+				console.log(data)
 			},
 			datatbleSearch() {
 				if (this.search.length) {

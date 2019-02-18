@@ -34,7 +34,7 @@ class PurchaseController extends Controller
         $purchase = $request->isMethod('put') ? Purchase::findOrFail($request->id) : new Purchase;
 
         $purchase->product_id= $request->input('product_id');
-        $purchase->email= $request->input('cost');
+        $purchase->cost_price= $request->input('cost_price');
         $purchase->selling_price= $request->input('selling_price');
         $purchase->seller_id= $request->input('seller_id');
         $purchase->active= $request->input('active');

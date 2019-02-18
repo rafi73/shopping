@@ -225,7 +225,7 @@
 							axios.post('/api/seller', this.seller)
 								.then(
 									(response) => {
-										this.showSnackbar('Item added successfully !')
+										this.showSnackbar('Item added')
 										this.loading = false
 										console.log(response)
 										this.fetchAll()

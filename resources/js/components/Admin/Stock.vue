@@ -293,7 +293,7 @@
 							axios.post('/api/stock', this.stock)
 								.then(
 									(response) => {
-										this.showSnackbar('Item Added Successfully')
+										this.showSnackbar('Item added')
 										console.log(response)
 										this.fetchAll()
 									}

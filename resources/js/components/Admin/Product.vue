@@ -55,7 +55,7 @@
 			</v-app>
 		</v-flex>
 
-		<v-dialog v-model="dialogInput" max-width="1200" persistent="true">
+		<v-dialog v-model="dialogInput" max-width="1200" persistent>
 			<v-card>
 				<v-card-title>
 					<span class="headline">{{ formTitle }}</span>
@@ -415,7 +415,7 @@
 							axios.post('/api/product', this.product)
 								.then(
 									(response) => {
-										this.showSnackbar('Item Added Successfully')
+										this.showSnackbar('Item added')
 										console.log(response)
 										this.fetchAll()
 									}
