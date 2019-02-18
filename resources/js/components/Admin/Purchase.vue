@@ -30,11 +30,10 @@
 					<v-data-table :headers="headers" :items="purchases" :pagination.sync="pagination"
 						:total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
 						<template slot="items" slot-scope="props">
-							<td>{{ props.item.batch}}</td>
-							<td class="text-xs-right">{{ props.item.quantity}}</td>
 							<td>{{ props.item.product.name }}</td>
 							<td>{{ props.item.seller.name }}</td>
-							<td>{{ props.item.expiry_date }}</td>
+							<td class="text-xs-right">{{ props.item.cost_price}}</td>
+							<td class="text-xs-right">{{ props.item.selling_price}}</td>
 							<td>{{ props.item.active }}</td>
 							<td>{{ props.item.created_at }}</td>
 							<td>
@@ -183,11 +182,10 @@
 				loading: false,
 				dialog: false,
 				headers: [
-					{ text: 'Batch', value: 'batch' },
-					{ text: 'Quantity', value: 'quantity', align: 'right' },
 					{ text: 'Product', value: 'product', sortable: false },
 					{ text: 'Seller', value: 'seller', sortable: false },
-					{ text: 'Expiry Date', value: 'expiry_date' },
+					{ text: 'Cost', value: 'cost_price', align: 'right'  },
+					{ text: 'Selling', value: 'selling_price', align: 'right' },
 					{ text: 'Active', value: 'active' },
 					{ text: 'Created At', value: 'created_at' },
 					{ text: "Actions", value: "name", sortable: false }
@@ -263,6 +261,7 @@
 							axios.put('/api/purchase', this.purchase)
 								.then(
 									(response) => {
+										this.loading = false
 										this.showSnackbar('Updated successfully')
 										console.log(response)
 										this.fetchAll()
@@ -270,7 +269,9 @@
 								)
 								.catch(
 									(error) => {
+										this.loading = false
 										console.log(error)
+										this.showSnackbar(error.data.message)
 									}
 								)
 						} else {
@@ -279,6 +280,7 @@
 							axios.post('/api/purchase', this.purchase)
 								.then(
 									(response) => {
+										this.loading = false
 										this.showSnackbar('Item added')
 										console.log(response)
 										this.fetchAll()
@@ -286,12 +288,13 @@
 								)
 								.catch(
 									(error) => {
+										this.loading = false
 										console.log(error)
 									}
 								)
 						}
 						this.close()
-						this.loading = false
+						
 						this.edit = false
 						this.purchaseSpecifications = {}
 					}

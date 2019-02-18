@@ -105,8 +105,14 @@ class PurchaseController extends Controller
         }
         // Get Purchases   
         $query = Purchase::where(function ($query) use($search) {
-                            $query->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('description', 'like', '%' . $search . '%');
+                            $query->where('cost_price', 'like', '%' . $search . '%')
+                            ->orWhere('selling_price', 'like', '%' . $search . '%')
+                            ->orWhereHas('product', function ($query) use ($search){
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('seller', function ($query) use ($search){
+                                $query->where('name', 'like', '%' . $search . '%');
+                            });
                         });
 
         if (isset($sortType)) 
