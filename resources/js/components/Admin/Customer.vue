@@ -209,7 +209,7 @@
 						this.loading = true
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							this.customer.updated_by = 0
+							this.customer.updated_by = this.$store.state.currentUser.id
 
 							axios.put('/api/customer', this.customer)
 								.then(
@@ -227,8 +227,8 @@
 								)
 						} else {
 							console.log('save', this.editedItem)
-							this.customer.created_by = 0
-							this.customer.updated_by = 0
+							this.customer.created_by = this.$store.state.currentUser.id
+							this.customer.updated_by = this.$store.state.currentUser.id
 							axios.post('/api/customer', this.customer)
 								.then(
 									(response) => {

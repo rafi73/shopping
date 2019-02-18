@@ -61,7 +61,7 @@ export default new Router({
             meta: 
             { 
                 name: '社員管理', 
-                icon: 'supervisor_account',
+                icon: 'list',
                 requiresAuth : true
             } 
         },
@@ -72,7 +72,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Brand', 
-                icon: 'supervisor_account',
+                icon: 'slideshow',
                 requiresAuth : true
             } 
         },
@@ -83,7 +83,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Category', 
-                icon: 'supervisor_account',
+                icon: 'category',
                 requiresAuth : true
             } 
         },
@@ -94,7 +94,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Category Wise Specification', 
-                icon: 'supervisor_account',
+                icon: 'folder_special',
                 requiresAuth : true
             } 
         },
@@ -116,7 +116,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Order', 
-                icon: 'supervisor_account',
+                icon: 'shopping_cart',
                 requiresAuth : true
             } 
         },
@@ -127,7 +127,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Price List', 
-                icon: 'supervisor_account',
+                icon: 'shop',
                 requiresAuth : true
             } 
         },
@@ -138,7 +138,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Product', 
-                icon: 'supervisor_account',
+                icon: 'grain',
                 requiresAuth : true
             } 
         },
@@ -149,7 +149,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Quote Request', 
-                icon: 'supervisor_account',
+                icon: 'table_chart',
                 requiresAuth : true
             } 
         },
@@ -161,7 +161,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Specification', 
-                icon: 'supervisor_account',
+                icon: 'gesture',
                 requiresAuth : true
             } 
         },
@@ -172,7 +172,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Sub Category', 
-                icon: 'supervisor_account',
+                icon: 'waves',
                 requiresAuth : true
             } 
         },
@@ -183,7 +183,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Seller', 
-                icon: 'supervisor_account',
+                icon: 'how_to_reg',
                 requiresAuth : true
             } 
         },
@@ -194,7 +194,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Stock', 
-                icon: 'supervisor_account',
+                icon: 'timeline',
                 requiresAuth : true
             } 
         },
@@ -205,7 +205,7 @@ export default new Router({
             meta: 
             { 
                 name: 'Purchase', 
-                icon: 'supervisor_account',
+                icon: 'local_atm',
                 requiresAuth : true
             } 
         },

@@ -151,8 +151,13 @@ class StockController extends Controller
         }
         // Get Stocks   
         $query = Stock::where(function ($query) use($search) {
-                            $query->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('description', 'like', '%' . $search . '%');
+                            $query->where('batch', 'like', '%' . $search . '%')
+                            ->orWhereHas('product', function ($query) use ($search){
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('seller', function ($query) use ($search){
+                                $query->where('name', 'like', '%' . $search . '%');
+                            });
                         });
 
         if (isset($sortType)) 

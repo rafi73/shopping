@@ -202,7 +202,7 @@
 						this.loading = true
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							this.seller.updated_by = 0
+							this.seller.updated_by = this.$store.state.currentUser.id
 
 							axios.put('/api/seller', this.seller)
 								.then(
@@ -220,8 +220,8 @@
 								)
 						} else {
 							console.log('save', this.editedItem)
-							this.seller.created_by = 0
-							this.seller.updated_by = 0
+							this.seller.created_by = this.$store.state.currentUser.id
+							this.seller.updated_by = this.$store.state.currentUser.id
 							axios.post('/api/seller', this.seller)
 								.then(
 									(response) => {
@@ -301,7 +301,6 @@
 						this.loading = false
 					})
 					.catch(error => {
-						debugger
 						if (error.response) {
 							console.log(error.response);
 							if (error.response.status === 401) {

@@ -409,8 +409,8 @@
 							console.log('save', this.editedItem)
 
 							
-							this.product.created_by = 0
-							this.product.updated_by = 0
+							this.product.created_by = this.$store.state.currentUser.id
+							this.product.updated_by = this.$store.state.currentUser.id
 
 							axios.post('/api/product', this.product)
 								.then(

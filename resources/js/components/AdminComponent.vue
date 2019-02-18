@@ -24,7 +24,7 @@
             <v-toolbar-title>{{title}}</v-toolbar-title>
             <v-spacer></v-spacer>
             {{ name }}
-            <v-btn icon @click="axiosLogout()">
+            <v-btn icon @click="logout()">
                 <v-tooltip left>
                     <v-icon slot="activator" color="white" dark>exit_to_app</v-icon>
                     <span>ログアウト</span>
@@ -45,6 +45,23 @@
         <v-footer color="primary" dark app fixed>
             <span class="white--text ml-3" v-html="footer"></span>
         </v-footer>
+
+        <v-dialog v-model="dialogConfirmLogout" max-width="500">
+			<v-card>
+				<v-card-title class="headline">Confirm!</v-card-title>
+				<v-card-text>Are you sure want to logout?</v-card-text>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					
+					<v-btn color="red darken-1" flat="flat" @click="dialogConfirmLogout = false">
+						Cancel
+					</v-btn>
+                    <v-btn color="blue darken-1" flat="flat" @click="axiosLogout">
+						Logout
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
     </v-app>
 </template>
 
@@ -54,13 +71,13 @@
 
         props: {
             name: String,
-            logout: String,
         },
 
         data: () => ({
             drawer: false,
             footer: new Date().getFullYear(),
             title: 'Application',
+            dialogConfirmLogout: false,
         }),
 
         mounted() {
@@ -72,6 +89,9 @@
             axiosLogout: function () {
                 this.$store.commit('logout');
                 this.$router.push({ name: 'login' })
+            },
+            logout: function () {
+                this.dialogConfirmLogout = true
             },
         },
     }

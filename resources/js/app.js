@@ -10,7 +10,7 @@ import colors from 'vuetify/es5/util/colors'
 
 Vue.use(Vuetify, {
     theme: {
-        primary: colors.indigo.base,
+        primary: colors.blueGrey.base,
         secondary: colors.blue.base,
         accent: colors.amber.base,
     }
@@ -41,6 +41,9 @@ Vue.use(wysiwyg, {
         dropzoneOptions: {}
     },
 })
+
+import moment from 'moment'
+Vue.prototype.$moment = moment
 
 // Main app
 const app = new Vue({

@@ -27,17 +27,14 @@
 					</v-card-title>
 
 
-					<v-data-table :headers="headers" :items="products" :pagination.sync="pagination"
+					<v-data-table :headers="headers" :items="stocks" :pagination.sync="pagination"
 						:total-items="totalItems" :loading="loading" :rows-per-page-items="rowsPerPageItems">
 						<template slot="items" slot-scope="props">
-							<td>{{ props.item.name }}</td>
-							<td>{{ props.item.category.name }}</td>
-							<td>
-								<div class="image-container">
-									<img class="object-fit-cover"
-										:src="props.item.image.toString().split(',')[0] || '/img/v.png'" />
-								</div>
-							</td>
+							<td>{{ props.item.batch}}</td>
+							<td class="text-xs-right">{{ props.item.quantity}}</td>
+							<td>{{ props.item.product.name }}</td>
+							<td>{{ props.item.seller.name }}</td>
+							<td>{{ props.item.expiry_date }}</td>
 							<td>{{ props.item.active }}</td>
 							<td>{{ props.item.created_at }}</td>
 							<td>
@@ -58,7 +55,7 @@
 			</v-app>
 		</v-flex>
 
-		<v-dialog v-model="dialogInput" max-width="1200" persistent="true">
+		<v-dialog v-model="dialogInput" max-width="1200" persistent>
 			<v-card>
 				<v-card-title>
 					<span class="headline">{{ formTitle }}</span>
@@ -67,65 +64,52 @@
 					<v-container grid-list-md>
 						<v-layout wrap>
 							<v-flex xs12 sm6 md6>
-								<multiselect placeholder="Select Product" data-vv-name="category"
-									v-model="selectedCategory" track-by="id" label="name" :options="categories"
-									@select="onSelectCategory" v-validate="'required'">
+								<multiselect placeholder="Select stock" data-vv-name="product"
+									v-model="selectedProduct" track-by="id" label="name" :options="products"
+									@select="onSelectProduct" v-validate="'required'">
 								</multiselect>
 								<span class="v-messages error--text"
-									v-show="errors.has('category')">{{ errors.first('category') }}</span>
+									v-show="errors.has('product')">{{ errors.first('product') }}</span>
+									
 							</v-flex>
 
 							<v-flex xs12 sm6 md6>
-								<multiselect placeholder="Select Seller" data-vv-name="category"
-									v-model="selectedCategory" track-by="id" label="name" :options="categories"
-									@select="onSelectCategory" v-validate="'required'">
+								<multiselect placeholder="Select Seller" data-vv-name="seller"
+									v-model="selectedSeller" track-by="id" label="name" :options="sellers"
+									@select="onSelectSeller" v-validate="'required'">
 								</multiselect>
 								<span class="v-messages error--text"
-									v-show="errors.has('category')">{{ errors.first('category') }}</span>
+									v-show="errors.has('seller')">{{ errors.first('seller') }}</span>
 							</v-flex>
 
-							<v-flex xs12 sm6 md4>
-								<v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent lazy
+							
+							<v-flex xs12 sm6 md6>
+								<v-text-field v-validate="'required|decimal:2'" v-model="stock.quantity" :counter="300"
+									:error-messages="errors.collect('quantity')" :label="`${ $t('stock_quantity')}`"
+									name="quantity" data-vv-as="quantity"></v-text-field>
+							</v-flex>
+
+							<v-flex xs12 sm6 md6>
+								<v-text-field v-validate="'required'" v-model="stock.batch" :counter="300"
+									:error-messages="errors.collect('batch')" :label="`${ $t('stock_batch')}`"
+									name="batch" data-vv-as="batch"></v-text-field>
+							</v-flex>
+
+							<v-flex xs12 sm12 md12>
+								<v-dialog ref="dialog" v-model="modal" :return-value.sync="stock.expiry_date" persistent lazy
 									full-width width="290px">
-									<v-text-field slot="activator" v-model="date" label="Picker in dialog"
+									<v-text-field slot="activator" v-model="stock.expiry_date" label="Expiry Date"
 										prepend-icon="event" readonly></v-text-field>
-									<v-date-picker v-model="date" scrollable>
+									<v-date-picker v-model="stock.expiry_date" scrollable>
 										<v-spacer></v-spacer>
 										<v-btn flat color="primary" @click="modal = false">Cancel</v-btn>
-										<v-btn flat color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
+										<v-btn flat color="primary" @click="$refs.dialog.save(stock.expiry_date)">OK</v-btn>
 									</v-date-picker>
 								</v-dialog>
 							</v-flex>
 
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
-									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
-									name="name" data-vv-as="name"></v-text-field>
-							</v-flex>
-
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
-									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
-									name="name" data-vv-as="name"></v-text-field>
-							</v-flex>
-
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
-									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
-									name="name" data-vv-as="name"></v-text-field>
-							</v-flex>
-
-							<v-flex xs12 sm12 md12>
-								<v-text-field v-validate="'required'" v-model="product.name" :counter="300"
-									:error-messages="errors.collect('name')" :label="`${ $t('product_name')}`"
-									name="name" data-vv-as="name"></v-text-field>
-							</v-flex>
-
-
-
-							<v-checkbox :label="`${$t('product_active')}: ${product.active}`" v-model="product.active">
+							<v-checkbox :label="`${$t('stock_active')}: ${stock.active}`" v-model="stock.active">
 							</v-checkbox>
-							<v-checkbox :label="`${$t('New')}: ${product.new}`" v-model="product.new"></v-checkbox>
 						</v-layout>
 					</v-container>
 				</v-card-text>
@@ -206,73 +190,25 @@
 		},
 		data() {
 			return {
-				product: {
-					specification: {}
+				stock: {
+					expiry_date: this.$moment().format("YYYY-MM-DD"),
 				},
 				loading: false,
 				dialog: false,
 				headers: [
-					{
-						text: 'Name',
-						value: 'name'
-					},
-					{
-						text: 'Category',
-						value: 'category'
-					},
-					{
-						text: 'Image',
-						value: 'image',
-						align: 'center'
-					},
-					{
-						text: 'Active',
-						value: 'active'
-					},
-					{
-						text: 'Created At',
-						value: 'created_at'
-					},
-					{
-						text: "Actions",
-						value: "name",
-						sortable: false
-					}
+					{ text: 'Batch', value: 'batch' },
+					{ text: 'Quantity', value: 'quantity', align: 'right' },
+					{ text: 'Product', value: 'product', sortable: false },
+					{ text: 'Seller', value: 'seller', sortable: false },
+					{ text: 'Expiry Date', value: 'expiry_date' },
+					{ text: 'Active', value: 'active' },
+					{ text: 'Created At', value: 'created_at' },
+					{ text: "Actions", value: "name", sortable: false }
 				],
-				desserts: [],
-				editedIndex: -1,
-				editedItem: {
-					name: "",
-					calories: 0,
-					fat: 0,
-					carbs: 0,
-					protein: 0
-				},
-				defaultItem: {
-					name: "",
-					calories: 0,
-					fat: 0,
-					carbs: 0,
-					protein: 0
-				},
 				search: '',
-				subCategories: [],
 				dialogConfirmDelete: false,
 				edit: false,
 				dialogInput: false,
-				selectedCategory: null,
-				selectedSubCategory: null,
-				categories: [],
-				selectedBrand: null,
-				brands: [],
-				categoryWiseSpecifications: [],
-				productSpecifications: {},
-				products: [],
-				productWiseSpecifications: [],
-				MAX_UPLOAD: 5,
-				UPLOAD_TEXT: 'Click Here To Upload',
-				DRAG_TEXT: 'Drag & Drop Files',
-				images: [],
 				snackbar: {
 					active: false,
 					y: 'bottom',
@@ -290,6 +226,11 @@
 				lastPage: 0,
 				date: new Date().toISOString().substr(0, 10),
 				modal: false,
+				selectedProduct: {},
+				products: [],
+				selectedSeller: {},
+				sellers: [],
+				stocks: []
 			}
 		},
 		computed: {
@@ -303,36 +244,20 @@
 			this.pagination.sortBy = 'created_at'
 			this.pagination.descending = 'true'
 			this.fetchAll()
-			this.fetchCategories()
-			this.fetchBrands()
 
+			console.log(this.$moment().format("YYYY-MM-DD"))
 		},
 		methods: {
 			editItem(item) {
-				this.product = Object.assign({}, item)
-				//this.imgInput = this.product.image
-				this.selectedCategory = this.categories.find(x => x.id === this.product.category.id)
-				this.selectedSubCategory = this.subCategories.find(x => x.id === this.product.sub_category_id)
-				this.selectedBrand = this.brands.find(x => x.id === this.product.brand_id)
-				this.fetchProductWiseSpecifications(this.product.id)
-				this.fetchCategoryWiseSpecifications(this.product.category.id)
+				this.stock = Object.assign({}, item)
+				this.selectedProduct =  this.stock.product
+				this.selectedSeller = this.stock.seller
 				this.dialogInput = true
 				this.edit = true
-				this.productSpecifications = {}
-
-				let images = this.product.image.split(',')
-				images.forEach(element => {
-					this.images.push({
-						path: element,
-						default: 1,
-						highlight: 1,
-						caption: 'caption to display. receive',
-					})
-				})
 			},
 			deleteItem(item) {
 				this.dialogConfirmDelete = true
-				this.product = item
+				this.stock = item
 			},
 			close() {
 				this.dialogInput = false
@@ -342,16 +267,17 @@
 				}, 300)
 			},
 			save() {
-				this.product.specification = this.productSpecifications
 				this.$validator.validate().then(result => {
 					if (result) {
 						this.loading = true
+						this.stock.updated_by = this.$store.state.currentUser.id
+
 						if (this.edit) {
 							console.log('edit', this.editedItem)
-							axios.put('/api/product', this.product)
+							axios.put('/api/stock', this.stock)
 								.then(
 									(response) => {
-										this.showSnackbar('Item Updated Successfully')
+										this.showSnackbar('Updated successfully')
 										console.log(response)
 										this.fetchAll()
 									}
@@ -362,14 +288,9 @@
 									}
 								)
 						} else {
-							//this.desserts.push(this.editedItem)
-							console.log('save', this.editedItem)
-
-
-							this.product.created_by = 0
-							this.product.updated_by = 0
-
-							axios.post('/api/product', this.product)
+							this.stock.created_by = this.$store.state.currentUser.id
+							
+							axios.post('/api/stock', this.stock)
 								.then(
 									(response) => {
 										this.showSnackbar('Item Added Successfully')
@@ -386,7 +307,7 @@
 						this.close()
 						this.loading = false
 						this.edit = false
-						this.productSpecifications = {}
+						this.stockSpecifications = {}
 					}
 					else {
 						console.log('validation failed')
@@ -396,7 +317,7 @@
 			fetchAll() {
 				console.log(this.pagination)
 				this.loading = true
-				let url = `/api/products-datatable`
+				let url = `/api/stocks-datatable`
 				let params = `?page=${this.pagination.page}
 								&rowsPerPage=${this.pagination.rowsPerPage}
 								&sortBy=${this.pagination.sortBy}
@@ -405,7 +326,7 @@
 
 				axios.get(url + params)
 					.then(response => {
-						this.products = response.data.data
+						this.stocks = response.data.data
 						this.totalItems = response.data.meta.total
 						this.lastPage = response.data.meta.last_page
 						console.log(response.data)
@@ -423,7 +344,7 @@
 			erase() {
 				this.dialogConfirmDelete = false
 				this.loading = true
-				axios.delete(`/api/product/${this.product.id}`)
+				axios.delete(`/api/stock/${this.stock.id}`)
 					.then(response => {
 						this.loading = false
 						this.fetchAll()
@@ -435,22 +356,41 @@
 					})
 			},
 			addNew() {
-				this.product = { image: null, active: true, new: true }
-				this.imgInput = ``
-				this.selectedCategory = null
-				this.selectedSubCategory = null
+				this.formTitle = 'Add new item'
+				this.stock = { batch: Math.random().toString(36).substring(7), active: true }
+				this.selectedProduct = null
+				this.selectedSeller = null
 				this.selectedBrand = null
 				this.dialogInput = true
-				this.edit = false,
-					this.imageName = null
+				this.edit = false
+
+
+				this.fetchProducts()
+				this.fetchSellers()
 			},
-			onSelectCategory(selectedOption, id) {
+			onSelectProduct(selectedOption, id) {
 				if (selectedOption) {
-					this.product.category_id = selectedOption.id
-					console.log(selectedOption.id)
-					this.fetchSubCategories(selectedOption.id)
-					this.fetchCategoryWiseSpecifications(selectedOption.id)
+					this.stock.product_id = selectedOption.id
 				}
+			},
+			onSelectSeller(selectedOption, id) {
+				if (selectedOption) {
+					this.stock.seller_id = selectedOption.id
+				}
+			},
+			fetchSellers() {
+				this.loading = true
+				axios.get(`/api/sellers`)
+					.then(response => {
+						this.sellers = response.data.data
+						console.log(response.data.data)
+						this.loading = false
+					})
+					.catch(error => {
+						if (error.response) {
+							console.log(error.response)
+						}
+					})
 			},
 			fetchProducts() {
 				this.loading = true
@@ -468,7 +408,7 @@
 			},
 			onSelectSubCategory(selectedOption, id) {
 				if (selectedOption) {
-					this.product.sub_category_id = selectedOption.id
+					this.stock.sub_category_id = selectedOption.id
 				}
 			},
 			fetchSubCategories(categoryId) {
@@ -487,7 +427,7 @@
 			},
 			onSelectBrand(selectedOption, id) {
 				if (selectedOption) {
-					this.product.brand_id = selectedOption.id
+					this.stock.brand_id = selectedOption.id
 				}
 			},
 			fetchBrands() {
@@ -518,20 +458,20 @@
 						}
 					})
 			},
-			fetchProductWiseSpecifications(productId) {
+			fetchstockWiseSpecifications(stockId) {
 				this.loading = true
-				axios.get(`/api/product-wise-specification/${productId}/product`)
+				axios.get(`/api/stock-wise-specification/${stockId}/stock`)
 					.then(response => {
-						this.productWiseSpecifications = response.data.data
+						this.stockWiseSpecifications = response.data.data
 
 						let temp = {}
 
-						this.productSpecifications = {}
-						this.productWiseSpecifications.forEach((element, index) => {
-							this.productSpecifications[element.specification_id] = element.description
+						this.stockSpecifications = {}
+						this.stockWiseSpecifications.forEach((element, index) => {
+							this.stockSpecifications[element.specification_id] = element.description
 						})
 
-						console.log('check', this.productSpecifications)
+						console.log('check', this.stockSpecifications)
 
 						console.log(response.data.data)
 						this.loading = false
@@ -545,7 +485,7 @@
 
 			uploadImageSuccess(formData, index, fileList) {
 				console.log(fileList)
-				this.product.image = fileList
+				this.stock.image = fileList
 				if (fileList.length > this.MAX_UPLOAD) {
 					alert('Max image limit  exceeded!')
 				}
@@ -560,7 +500,7 @@
 					fileList.forEach(element => {
 						images.push(element.path)
 					})
-					this.product.image = images.join()
+					this.stock.image = images.join()
 				}
 				else {
 				}

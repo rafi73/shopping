@@ -185,7 +185,7 @@
 						if (this.edit) {
 							// Object.assign(this.desserts[this.editedIndex], this.editedItem)
 							console.log('edit', this.editedItem)
-							this.specification.updated_by = 0
+							this.specification.updated_by = this.$store.state.currentUser.id
 
 							axios.put('/api/specification', this.specification)
 								.then(
@@ -202,8 +202,8 @@
 						} else {
 							//this.desserts.push(this.editedItem)
 							console.log('save', this.editedItem)
-							this.specification.created_by = 0
-							this.specification.updated_by = 0
+							this.specification.created_by = this.$store.state.currentUser.id
+							this.specification.updated_by = this.$store.state.currentUser.id
 							axios.post('/api/specification', this.specification)
 								.then(
 									(response) => {
