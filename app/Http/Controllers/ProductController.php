@@ -101,7 +101,8 @@ class ProductController extends Controller
         // Get Products
         $product = Product::findOrFail($id);
 
-        if($product->delete()) {
+        if($product->delete()) 
+        {
             return new ProductResource($product);
         }    
     }

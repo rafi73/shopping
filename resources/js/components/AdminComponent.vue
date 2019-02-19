@@ -3,6 +3,7 @@
         <fullscreen ref="fullscreen" @change="fullscreenChange">
             <v-navigation-drawer v-model="drawer" clipped fixed app>
                 <v-list dense>
+                    <r-link linkname='home'></r-link>
                     <r-link linkname='category'></r-link>
                     <r-link linkname='sub-category'></r-link>
                     <r-link linkname='brand'></r-link>
