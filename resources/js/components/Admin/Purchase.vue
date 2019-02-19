@@ -182,8 +182,8 @@
 				loading: false,
 				dialog: false,
 				headers: [
-					{ text: 'Product', value: 'product', sortable: false },
-					{ text: 'Seller', value: 'seller', sortable: false },
+					{ text: 'Product', value: 'products.name' },
+					{ text: 'Seller', value: 'sellers.name' },
 					{ text: 'Cost', value: 'cost_price', align: 'right'  },
 					{ text: 'Selling', value: 'selling_price', align: 'right' },
 					{ text: 'Active', value: 'active' },
@@ -238,6 +238,9 @@
 				this.selectedSeller = this.purchase.seller
 				this.dialogInput = true
 				this.edit = true
+
+				this.fetchProducts()
+				this.fetchSellers()
 			},
 			deleteItem(item) {
 				this.dialogConfirmDelete = true

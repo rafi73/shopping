@@ -204,7 +204,8 @@
                 dealerAuth: false,
                 quoteRequest: {},
                 billing: {},
-                shipping: {}
+                shipping: {},
+                VAT: 15
 
             },
             created() {
@@ -1201,6 +1202,7 @@
                     order.total = parseFloat(this.totalPrice.replace(/,/g, ''))
                     order.billing = this.billing
                     order.shipping = this.shipping
+                    order.vat = parseFloat(this.totalVat.replace(/,/g, '')) 
                     
                     axios.post('/api/place-order', order)
                     .then(
@@ -1318,7 +1320,11 @@
             },
             computed: {
                 totalPrice() {
-                    return this.getPrice(this.cartProducts.reduce((acc, item) => acc + parseFloat((item.price - item.discount_price) * item.quantity), 0));
+                    return this.getPrice(this.cartProducts.reduce((acc, item) => acc + parseFloat((item.price - item.discount_price) * item.quantity), 0))
+                },
+                totalVat() {
+                    return this.getPrice((this.cartProducts.reduce((acc, item) => acc + parseFloat((item.price - item.discount_price) * item.quantity), 0))  - 
+                                        (this.cartProducts.reduce((acc, item) => acc + parseFloat((item.price - item.discount_price) * item.quantity), 0))/ (1 + (this.VAT / 100)))
                 }
             }
         })

@@ -40,7 +40,8 @@ class BrandController extends Controller
         $brand->active= $request->input('active');
         $brand->created_by= $request->input('created_by');
         $brand->updated_by= $request->input('updated_by');
-        if($brand->save()) {
+        if($brand->save()) 
+        {
             return new BrandResource($brand);
         }
     }
@@ -73,7 +74,8 @@ class BrandController extends Controller
         // Get Brands
         $brand = Brand::findOrFail($id);
 
-        if($brand->delete()) {
+        if($brand->delete()) 
+        {
             return new BrandResource($brand);
         }    
     }

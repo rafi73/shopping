@@ -103,7 +103,7 @@ class PurchaseController extends Controller
                 $sortType = 'asc';
                 break;
         }
-        // Get Purchases   
+        
         $query = Purchase::where(function ($query) use($search) {
                             $query->where('cost_price', 'like', '%' . $search . '%')
                             ->orWhere('selling_price', 'like', '%' . $search . '%')
@@ -117,8 +117,24 @@ class PurchaseController extends Controller
 
         if (isset($sortType)) 
         {
-            $query = $query->orderBy($sortBy, $sortType);
+            if($sortBy == 'products.name')
+            {
+                $query = $query->whereHas('product', function ($query) use ($sortBy, $sortType){
+                        $query->orderBy($sortBy, $sortType);
+                });
+            }
+            elseif($sortBy == 'sellers.name')
+            {
+                $query = $query->whereHas('seller', function ($query) use ($sortBy, $sortType){
+                        $query->orderBy($sortBy, $sortType);
+                });
+            }
+            else
+            {
+                $query = $query->orderBy($sortBy, $sortType);
+            }
         }
+        $sql = $query->toSql(); 
         $purchases = $query->paginate($rowsPerPage);
 
         // Return collection of Purchases as a resource

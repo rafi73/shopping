@@ -126,9 +126,9 @@
                                         <span class="single-item-remove" @click.precent="removeProduct(product)">x</span>
                                     </div>
                                     <div class="subtotal">
-                                        <h3> Tax: <span>RM0.00</span> </h3>
-                                        <h3> Shipping: <span>RM0.00</span> </h3>
-                                        <h3> Total: <span>RM@{{totalPrice}}</span> </h3>
+                                        <h3> Total: <span>RM @{{totalPrice}}</span> </h3>
+                                        <h3> Vat (Inc.): <span>RM @{{totalVat}}</span> </h3>
+                                        <h3> Shipping: <span>RM 0.00</span> </h3>
                                     </div>
                                     <div class="checkout">
                                         <a href="{{ URL::route('cart') }}"> check out <i class="fa fa-angle-right"></i>

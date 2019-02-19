@@ -20,7 +20,8 @@ class PriceListController extends Controller
             $extension = $file->getClientOriginalExtension();
             $fileName = $file->getClientOriginalName();
 
-            if (!file_exists(public_path() . '/uploads/price-list' )) {
+            if (!file_exists(public_path() . '/uploads/price-list' )) 
+            {
                 mkdir(public_path().'/uploads/price-list', 0777, true);
             }
 

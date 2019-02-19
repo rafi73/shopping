@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Order;
 use App\OrderDetail;
+use App\Product;
 use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
@@ -16,13 +17,6 @@ class OrderController extends Controller
      */
     public function index()
     {
-        // Get Orders
-        // $orders = Order::with(['orderDetails', 'orderDetails.product'])->orderBy('created_at', 'desc')->paginate(10);
-
-        // // Return collection of Orders as a resource
-        // return OrderResource::collection($orders);
-
-
         $sortBy = \Request::get('sortBy');
         $rowsPerPage = \Request::get('rowsPerPage');
         $search = \Request::get('search');
@@ -45,11 +39,6 @@ class OrderController extends Controller
                             $query->where('billing_name', 'like', '%' . $search . '%')
                             ->orWhere('shipping_name', 'like', '%' . $search . '%');
                         });
-
-        // if (isset($sortType)) 
-        // {
-        //     $query = $query->orderBy($sortBy, $sortType);
-        // }
         $orders = $query->paginate($rowsPerPage);
 
         // Return collection of Brands as a resource
@@ -69,6 +58,7 @@ class OrderController extends Controller
         $order->customer_id= $request->input('customer_id');
         $order->discount= 0;
         $order->total= $request->input('total');
+        $order->vat= $request->input('vat');
         $order->billing_name= $request->input('billing')['name'];
         $order->billing_email= $request->input('billing')['email'];
         $order->billing_phone= $request->input('billing')['phone'];
@@ -83,16 +73,22 @@ class OrderController extends Controller
         $order->shipping_country= $request->input('billing')['country'];
         $order->shipping_state= $request->input('billing')['state'];
         $order->shipping_address= $request->input('billing')['address'];
+        $order->active= true;
 
         if($order->save()) 
         {
             $orderDetails = $request->input('details');
             foreach ($orderDetails as $key => $value) 
             {
+                $product = Product::findOrFail($value['id']);
                 $orderDetail = new OrderDetail;
                 $orderDetail->order_id = $order->id;
-                $orderDetail->product_id = $value['id'];
+                $orderDetail->product_id = $product->id;
+                $orderDetail->stock_id = 0;
                 $orderDetail->quantity = $value['quantity'];
+                $orderDetail->cost_price = 0;
+                $orderDetail->selling_price = $product->price;
+                $orderDetail->discount_price = $product->discount_price;
                 $orderDetail->save();
             }
             return new OrderResource($order);
@@ -113,9 +109,6 @@ class OrderController extends Controller
 
         // Return single Orders as a resource
         return new OrderResource($order);
-
-
-       
     }
 
 
@@ -130,7 +123,8 @@ class OrderController extends Controller
         // Get Orders
         $order = Order::findOrFail($id);
 
-        if($order->delete()) {
+        if($order->delete()) 
+        {
             return new OrderResource($order);
         }    
     }

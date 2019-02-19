@@ -16,7 +16,6 @@
                     <r-link linkname='seller'></r-link>
                     <r-link linkname='stock'></r-link>
                     <r-link linkname='purchase'></r-link>
-                
                 </v-list>
             </v-navigation-drawer>
 
@@ -24,7 +23,7 @@
                 <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title>{{title}}</v-toolbar-title>
                 <v-spacer></v-spacer>
-                {{ name }}
+                {{ $store.state.currentUser.name }}
                 <v-btn icon @click="toggle()">
                     <v-tooltip left>
                         <v-icon slot="activator" color="white" dark>fullscreen</v-icon>
@@ -38,20 +37,16 @@
                     </v-tooltip>
                 </v-btn>
             </v-toolbar>
-
             
-                <v-content>
-                    <v-container fluid fill-height 
-                        <v-layout justify-center fluid column>
-                            <v-fade-transition mode="out-in">
-                                <router-view @axios-logout="axiosLogout"></router-view>
-                            </v-fade-transition>
-                        </v-layout>
-                    </v-container>
-                </v-content>
-            
-
-            
+            <v-content>
+                <v-container fluid fill-height 
+                    <v-layout justify-center fluid column>
+                        <v-fade-transition mode="out-in">
+                            <router-view @axios-logout="destroySession"></router-view>
+                        </v-fade-transition>
+                    </v-layout>
+                </v-container>
+            </v-content>
 
             <v-footer color="primary" dark app fixed>
                 <span class="white--text ml-3" v-html="footer"></span>
@@ -67,7 +62,7 @@
                         <v-btn color="red darken-1" flat="flat" @click="dialogConfirmLogout = false">
                             Cancel
                         </v-btn>
-                        <v-btn color="blue darken-1" flat="flat" @click="axiosLogout">
+                        <v-btn color="blue darken-1" flat="flat" @click="destroySession">
                             Logout
                         </v-btn>
                     </v-card-actions>
@@ -102,7 +97,7 @@
         },
 
         methods: {
-            axiosLogout: function () {
+            destroySession: function () {
                 this.$store.commit('logout');
                 this.$router.push({ name: 'login' })
             },

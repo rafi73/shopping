@@ -7,7 +7,18 @@
             <v-list-tile-content>
                 <v-list-tile-title>{{getRoute( linkname, 'name' )}}</v-list-tile-title>
             </v-list-tile-content>
+            
         </v-list-tile>
+
+        <!-- <v-list-tile 
+            v-for="(item, i) in menu"
+            :key="i"
+            :to="item.path" 
+            active-class="highlighted"
+            :class="item.path === $route.path ? 'highlighted' : ''"
+        >
+            {{item.name}}
+        </v-list-tile> -->
     </router-link>
 </template>
 

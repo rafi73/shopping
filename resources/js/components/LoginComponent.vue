@@ -9,12 +9,13 @@
                                 <v-toolbar dark color="primary">
                                     <v-toolbar-title>Login form</v-toolbar-title>
                                     <v-spacer></v-spacer>
-                                    <!-- <v-tooltip bottom>
+                                    <v-tooltip bottom>
                                         <v-btn icon large :href="source" target="_blank" slot="activator">
-                                            <v-icon large>code</v-icon>
+                                            <!-- <v-icon large>code</v-icon> -->
+                                             <v-progress-circular indeterminate  :hidden="!loading"></v-progress-circular>
                                         </v-btn>
                                         <span>Source</span>
-                                    </v-tooltip> -->
+                                    </v-tooltip>
                                 </v-toolbar>
                                 <v-card-text>
                                     <v-form @keyup.enter.native="login()">
@@ -67,6 +68,7 @@
                 message: ''
                 
             },
+            loading: false
         }),
 
         props: {
@@ -74,15 +76,18 @@
         },
         methods:{
             login(){
+                this.loading = true
                 this.$store.dispatch('login')
                 login(this.user)
                 .then((res) => {
-                    this.$store.commit("loginSuccess", res);
-                    this.$router.push({path: '/admin/home'});
+                    this.$store.commit("loginSuccess", res)
+                    this.$router.push({path: '/admin/home'})
+                    this.loading = false
                 })
                 .catch((error) => {
                     this.$store.commit("loginFailed", {error});
                     this.showSnackbar("Username or Password error !")
+                    this.loading = false
                 });
             },
             showSnackbar(message) {

@@ -19,9 +19,9 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('product_id');  
             $table->integer('quantity');
             $table->integer('stock_id');
-            $table->decimal('cost_price', 5,2); 
-            $table->decimal('selling_price', 5,2); 
-            $table->decimal('discount', 5,2); 
+            $table->decimal('cost_price', 22,2); 
+            $table->decimal('selling_price', 22,2); 
+            $table->decimal('discount_price', 22,2); 
             $table->timestamps();
         });
     }

@@ -83,7 +83,7 @@
                         </span>
                     </p>
                     <!-- vat cost -->
-                    <p class="no-border">vat <span class="pull-right">RM0.00</span> </p>
+                    <p class="no-border">Vat (Inc.) <span class="pull-right">RM@{{totalVat}}</span> </p>
                     <!-- grand total -->
                     <p class="total-price">grand total <span class="pull-right">RM@{{totalPrice}}</span> </p>
                 </div>
