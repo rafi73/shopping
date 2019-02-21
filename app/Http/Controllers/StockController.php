@@ -76,7 +76,8 @@ class StockController extends Controller
         // Get Stocks
         $stock = Stock::findOrFail($id);
 
-        if($stock->delete()) {
+        if($stock->delete()) 
+        {
             return new StockResource($stock);
         }    
     }

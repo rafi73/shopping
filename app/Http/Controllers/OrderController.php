@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Order;
 use App\OrderDetail;
 use App\Product;
+use App\Stock;
 use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
@@ -80,16 +81,28 @@ class OrderController extends Controller
             $orderDetails = $request->input('details');
             foreach ($orderDetails as $key => $value) 
             {
-                $product = Product::findOrFail($value['id']);
-                $orderDetail = new OrderDetail;
-                $orderDetail->order_id = $order->id;
-                $orderDetail->product_id = $product->id;
-                $orderDetail->stock_id = 0;
-                $orderDetail->quantity = $value['quantity'];
-                $orderDetail->cost_price = 0;
-                $orderDetail->selling_price = $product->price;
-                $orderDetail->discount_price = $product->discount_price;
-                $orderDetail->save();
+                $i = 1;
+                $quantity = $value['quantity'];
+                while ($i <= $quantity) 
+                {
+                    $stock = Stock::where('product_id', $value['id'])->whereRaw('quantity > sold_quantity')->limit(1)->get();
+                    if(count($stock))
+                    {
+                        $stock[0]->sold_quantity += 1;
+                        $stock[0]->save();
+
+                        $product = Product::findOrFail($value['id']);
+                        $orderDetail = new OrderDetail;
+                        $orderDetail->order_id = $order->id;
+                        $orderDetail->product_id = $product->id;
+                        $orderDetail->stock_id = $stock[0]->id;
+                        $orderDetail->cost_price = 0;
+                        $orderDetail->selling_price = $product->price;
+                        $orderDetail->discount_price = $product->discount_price;
+                        $orderDetail->save();
+                    }
+                    $i++;
+                }
             }
             return new OrderResource($order);
         }
@@ -106,6 +119,14 @@ class OrderController extends Controller
     {
         // Get Orders
         $order = Order::with(array('orderDetails', 'orderDetails.product'))->findOrFail($id);
+
+
+        
+        $orderDetails = OrderDetail::groupBy('product_id')
+                        ->selectRaw('count(*) as total, product_id')
+                        ->where('order_id', $id)->get();
+
+        dd($orderDetails);
 
         // Return single Orders as a resource
         return new OrderResource($order);
