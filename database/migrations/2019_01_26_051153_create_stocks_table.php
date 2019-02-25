@@ -21,6 +21,7 @@ class CreateStocksTable extends Migration
             $table->integer('seller_id');
             $table->date('expiry_date')->nullable();
             $table->integer('sold_quantity')->nullable()->default(0);
+            $table->decimal('cost_price', 22,2); 
             $table->boolean('active');
             $table->integer('created_by');
             $table->integer('updated_by');

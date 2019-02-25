@@ -86,5 +86,12 @@
     "seller_email": "email",
     "seller_company": "company",
     "seller_contact": "contact",
-    "seller_active": "Active"
+    "seller_active": "Active",
+
+    "purchase_name": "Purchase",
+    "purchase_select_product": "Select Product",
+    "purchase_select_seller": "Select Seller",
+    "purchase_cost_price": "Cost Price",
+    "purchase_quantity": "Quantity",
+    "purchase_active": "Active"
 }

@@ -17,9 +17,10 @@ class CreatePurchasesTable extends Migration
             $table->increments('id');
             $table->integer('product_id');
             $table->decimal('cost_price', 22,2); 
-            $table->decimal('selling_price', 22,2);
+            $table->bigInteger('quantity');
             $table->integer('seller_id'); 
             $table->boolean('active');
+            $table->boolean('added_to_stock')->nullable();
             $table->integer('created_by');
             $table->integer('updated_by');
             $table->timestamps();

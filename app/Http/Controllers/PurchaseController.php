@@ -35,7 +35,7 @@ class PurchaseController extends Controller
 
         $purchase->product_id= $request->input('product_id');
         $purchase->cost_price= $request->input('cost_price');
-        $purchase->selling_price= $request->input('selling_price');
+        $purchase->quantity= $request->input('quantity');
         $purchase->seller_id= $request->input('seller_id');
         $purchase->active= $request->input('active');
         $purchase->created_by= $request->input('created_by');
@@ -106,7 +106,7 @@ class PurchaseController extends Controller
         
         $query = Purchase::where(function ($query) use($search) {
                             $query->where('cost_price', 'like', '%' . $search . '%')
-                            ->orWhere('selling_price', 'like', '%' . $search . '%')
+                            ->orWhere('quantity', 'like', '%' . $search . '%')
                             ->orWhereHas('product', function ($query) use ($search){
                                 $query->where('name', 'like', '%' . $search . '%');
                             })

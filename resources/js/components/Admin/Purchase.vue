@@ -33,16 +33,45 @@
 							<td>{{ props.item.product.name }}</td>
 							<td>{{ props.item.seller.name }}</td>
 							<td class="text-xs-right">{{ props.item.cost_price}}</td>
-							<td class="text-xs-right">{{ props.item.selling_price}}</td>
+							<td class="text-xs-right">{{ props.item.quantity}}</td>
 							<td>{{ props.item.active }}</td>
 							<td>{{ props.item.created_at }}</td>
-							<td>
-								<v-icon small class="mr-2" @click="editItem(props.item)">
-									edit
-								</v-icon>
-								<v-icon small @click="deleteItem(props.item)">
-									delete
-								</v-icon>
+							<td class="text-xs-center">
+								<v-tooltip bottom>
+									<template #activator="data">
+										<v-icon small class="mr-2" @click="editItem(props.item)" v-on="data.on">edit</v-icon>
+									</template>
+									<span>Edit</span>
+								</v-tooltip>
+								<v-tooltip bottom>
+									<template #activator="data">
+										<v-icon small class="mr-2" @click="deleteItem(props.item)" v-on="data.on">delete</v-icon>
+									</template>
+									<span>Delete</span>
+								</v-tooltip>
+								<v-tooltip bottom>
+									<template #activator="data">
+										<v-icon :disabled="props.item.added_to_stock" small class="mr-2" @click="dialofgConfirmStock = true" v-on="data.on">timeline</v-icon>
+
+										<v-dialog v-model="dialofgConfirmStock" max-width="500">
+											<v-card>
+												<v-card-title class="headline">Confirm</v-card-title>
+												<v-card-text>Are you sure want add to stock?</v-card-text>
+												<v-card-actions>
+													<v-spacer></v-spacer>
+													
+													<v-btn color="red darken-1" flat="flat" @click="dialofgConfirmStock = false">
+														Cancel
+													</v-btn>
+													<v-btn color="blue darken-1" flat="flat" @click="stock(props.item)">
+														Add to Stock
+													</v-btn>
+												</v-card-actions>
+											</v-card>
+										</v-dialog>
+									</template>
+									<span>Purchase</span>
+								</v-tooltip>
 							</td>
 						</template>
 					</v-data-table>
@@ -63,7 +92,7 @@
 					<v-container grid-list-md>
 						<v-layout wrap>
 							<v-flex xs12 sm6 md6>
-								<multiselect placeholder="Select purchase" data-vv-name="product"
+								<multiselect :placeholder="`${ $t('purchase_select_product')}`" data-vv-name="product"
 									v-model="selectedProduct" track-by="id" label="name" :options="products"
 									@select="onSelectProduct" v-validate="'required'">
 								</multiselect>
@@ -73,7 +102,7 @@
 							</v-flex>
 
 							<v-flex xs12 sm6 md6>
-								<multiselect placeholder="Select Seller" data-vv-name="seller"
+								<multiselect :placeholder="`${ $t('purchase_select_seller')}`" data-vv-name="seller"
 									v-model="selectedSeller" track-by="id" label="name" :options="sellers"
 									@select="onSelectSeller" v-validate="'required'">
 								</multiselect>
@@ -85,13 +114,13 @@
 							<v-flex xs12 sm6 md6>
 								<v-text-field v-validate="'required|decimal:2'" v-model="purchase.cost_price" :counter="300"
 									:error-messages="errors.collect('cost_price')" :label="`${ $t('purchase_cost_price')}`"
-									name="cost_price" data-vv-as="cost_price"></v-text-field>
+									name="cost_price" data-vv-as="cost price"></v-text-field>
 							</v-flex>
 
 							<v-flex xs12 sm6 md6>
-								<v-text-field v-validate="'required|decimal:2'" v-model="purchase.selling_price" :counter="300"
-									:error-messages="errors.collect('selling_price')" :label="`${ $t('purchase_selling_price')}`"
-									name="selling_price" data-vv-as="selling_price"></v-text-field>
+								<v-text-field v-validate="'required|numeric'" v-model="purchase.quantity" :counter="300"
+									:error-messages="errors.collect('quantity')" :label="`${ $t('purchase_quantity')}`"
+									name="quantity" data-vv-as="quantity"></v-text-field>
 							</v-flex>
 
 							<v-checkbox :label="`${$t('purchase_active')}: ${purchase.active}`" v-model="purchase.active">
@@ -124,6 +153,8 @@
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+
+		 
 
 		<v-snackbar v-model="snackbar.active" :bottom="snackbar.y === 'bottom'" :left="snackbar.x === 'left'"
 			:multi-line="snackbar.mode === 'multi-line'" :right="snackbar.x === 'right'" :timeout="snackbar.timeout"
@@ -185,10 +216,10 @@
 					{ text: 'Product', value: 'products.name' },
 					{ text: 'Seller', value: 'sellers.name' },
 					{ text: 'Cost', value: 'cost_price', align: 'right'  },
-					{ text: 'Selling', value: 'selling_price', align: 'right' },
+					{ text: 'Quantity', value: 'quantity', align: 'right' },
 					{ text: 'Active', value: 'active' },
 					{ text: 'Created At', value: 'created_at' },
-					{ text: "Actions", value: "name", sortable: false }
+					{ text: "Actions", value: "name", align: 'center', sortable: false }
 				],
 				search: '',
 				dialogConfirmDelete: false,
@@ -210,11 +241,12 @@
 				totalItems: 0,
 				lastPage: 0,
 				modal: false,
-				selectedProduct: {},
+				selectedProduct: null,
 				products: [],
-				selectedSeller: {},
+				selectedSeller: null,
 				sellers: [],
-				purchases: []
+				purchases: [],
+				dialofgConfirmStock: false
 			}
 		},
 		computed: {
@@ -222,14 +254,16 @@
 		watch: {
 			pagination() {
 				this.fetchAll()
+				console.log('watch', this.$moment().valueOf())
 			}
 		},
 		created() {
 			this.pagination.sortBy = 'created_at'
 			this.pagination.descending = 'true'
-			this.fetchAll()
+			//this.fetchAll()
 
-			console.log(this.$moment().format("YYYY-MM-DD"))
+
+			console.log(this.$moment().valueOf())
 		},
 		methods: {
 			editItem(item) {
@@ -527,6 +561,36 @@
 					this.search = ""
 					this.fetchAll()
 				}
+			},
+			stock(purchase){
+				this.dialofgConfirmStock = false
+				let stock = {
+					purchase_id: purchase.id,
+					product_id: purchase.product.id,
+					quantity: purchase.quantity,
+					batch: Math.random().toString(36).substring(7),
+					seller_id: purchase.seller_id,
+					cost_price: purchase.cost_price,
+					active: true,
+					created_by: this.$store.state.currentUser.id,
+					updated_by: this.$store.state.currentUser.id
+				}
+				this.loading = true
+				axios.post('/api/add-purchase-to-stock', stock)
+				.then(
+					(response) => {
+						this.loading = false
+						this.showSnackbar('Item added to Stock')
+						console.log(response)
+						this.fetchAll()
+					}
+				)
+				.catch(
+					(error) => {
+						this.loading = false
+						console.log(error)
+					}
+				)
 			}
 		}
 	}

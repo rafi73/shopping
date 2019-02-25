@@ -345,7 +345,7 @@
 		created() {
 			this.pagination.sortBy = 'created_at'
 			this.pagination.descending = 'true'
-			this.fetchAll()
+			//this.fetchAll()
 			this.fetchCategories()
 			this.fetchBrands()
 

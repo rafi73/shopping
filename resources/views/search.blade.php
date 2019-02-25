@@ -71,7 +71,7 @@
                                         <img :src="product.image || '/img/logo.png'" />
                                     </a>
                                     <div class="item-info">
-                                        <h2><a href="product-details.html" class="item-title">@{{product.name}}</a></h2>
+                                        <h2><a href="#" @click.prevent="goToProduct(product)"  class="item-title large">@{{product.name}}</a></h2>
                                         {{-- <div class="ratings">
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
@@ -90,83 +90,7 @@
 
                             <!-- list items start -->
                             <div class="list-items">
-                                <!-- single product item start -->
-                                <div class="single-product-item floating">
-                                    <a href="product-details.html" class="item-img">
-                                        <img src="{{asset('themes/frontend/img/products/42.jpg')}}" alt="">
-                                    </a>
-                                    <div class="item-info">
-                                        <h2><a href="product-details.html" class="item-title">10FT Paracord 7
-                                                Strand
-                                                Parachute Cord...</a></h2>
-                                        {{-- <div class="ratings">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div> --}}
-                                        <h3 class="item-price"> $50.78 </h3>
-                                    </div>
-                                </div>
-                                <!-- single product item end -->
-                                <!-- single product item start -->
-                                <div class="single-product-item floating">
-                                    <a href="product-details.html" class="item-img">
-                                        <img src="{{asset('themes/frontend/img/products/48.jpg')}}" alt="">
-                                    </a>
-                                    <div class="item-info">
-                                        <h2><a href="product-details.html" class="item-title">Butterfly Mid-Century
-                                                Dining Chair...</a></h2>
-                                        <div class="ratings">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <h3 class="item-price"> $20.71 </h3>
-                                    </div>
-                                </div>
-                                <!-- single product item end -->
-                                <!-- single product item start -->
-                                <div class="single-product-item floating">
-                                    <a href="product-details.html" class="item-img">
-                                        <img src="{{asset('themes/frontend/img/products/37.jpg')}}" alt="">
-                                    </a>
-                                    <div class="item-info">
-                                        <h2><a href="product-details.html" class="item-title">Customized 19Inch
-                                                Computer Screen...</a></h2>
-                                        <div class="ratings">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <h3 class="item-price"> $30.98 </h3>
-                                    </div>
-                                </div>
-                                <!-- single product item end -->
-                                <!-- single product item start -->
-                                <div class="single-product-item floating">
-                                    <a href="product-details.html" class="item-img">
-                                        <img src="{{asset('themes/frontend/img/products/21.jpg')}}" alt="">
-                                    </a>
-                                    <div class="item-info">
-                                        <h2><a href="product-details.html" class="item-title">Customized 19Inch
-                                                Computer Screen...</a></h2>
-                                        <div class="ratings">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <h3 class="item-price"> $30.98 </h3>
-                                    </div>
-                                </div>
-                                <!-- single product item end -->
+                                
                             </div>
                             <!-- list items start -->
 
@@ -233,7 +157,7 @@
                                                 <span class="sale"></span>
                                             </a>
                                             <div class="item-info text-center">
-                                                <h2><a href="product-details.html" class="item-title">@{{product.name}}</a></h2>
+                                                <h2><a href="#" @click.prevent="goToProduct(product)"  class="item-title large">@{{product.name}}</a></h2>
                                                 {{-- <div class="ratings">
                                                     <i class="fa fa-star"></i>
                                                     <i class="fa fa-star"></i>
@@ -277,7 +201,7 @@
                                                 <span class="sale"></span>
                                             </a>
                                             <div class="item-info">
-                                                <h2><a href="product-details.html" class="item-title large">@{{product.name}}</a></h2>
+                                                <h2><a href="#" @click.prevent="goToProduct(product)"  class="item-title large">@{{product.name}}</a></h2>
                                                 {{-- <div class="ratings">
                                                     <i class="fa fa-star"></i>
                                                     <i class="fa fa-star"></i>
@@ -288,7 +212,7 @@
                                                 <h3 class="item-price">@{{product.price}}
                                                     {{-- <span class="old-price">$30.51</span> --}}
                                                 </h3>
-                                                <p class="product-descriptions"> @{{product.description}}</p>
+                                                <p class="product-descriptions" v-html="product.description"></p>
                                                 <div class="actions">
                                                     {{-- <a href="#" @click.prevent="addToCart(product)" class="single-action">add
                                                         to cart</a>

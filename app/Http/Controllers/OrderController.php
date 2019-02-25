@@ -96,7 +96,7 @@ class OrderController extends Controller
                         $orderDetail->order_id = $order->id;
                         $orderDetail->product_id = $product->id;
                         $orderDetail->stock_id = $stock[0]->id;
-                        $orderDetail->cost_price = 0;
+                        $orderDetail->cost_price = $stock[0]->cost_price;
                         $orderDetail->selling_price = $product->price;
                         $orderDetail->discount_price = $product->discount_price;
                         $orderDetail->save();
@@ -126,7 +126,7 @@ class OrderController extends Controller
                         ->selectRaw('count(*) as total, product_id')
                         ->where('order_id', $id)->get();
 
-        dd($orderDetails);
+        //dd($orderDetails);
 
         // Return single Orders as a resource
         return new OrderResource($order);

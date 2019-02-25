@@ -86,7 +86,7 @@
 
         data: () => ({
             drawer: false,
-            footer: new Date().getFullYear(),
+            footer: `© ${new Date().getFullYear()} Copyright | All right researved`,
             title: 'Application',
             dialogConfirmLogout: false,
             fullscreen: false   

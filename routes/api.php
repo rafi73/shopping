@@ -177,6 +177,8 @@ Route::group(['middleware' => 'jwt.auth'], function ($router) {
     Route::delete('stock/{id}', 'StockController@destroy');
     // List stock
     Route::get('stocks-datatable', 'StockController@getDatatable');
+     // Create new stock
+     Route::post('add-purchase-to-stock', 'StockController@addStockFromPurchase');
 
 
     # 1.1 Seller routes
@@ -206,6 +208,7 @@ Route::group(['middleware' => 'jwt.auth'], function ($router) {
     Route::delete('purchase/{id}', 'PurchaseController@destroy');
     // List purchase
     Route::get('purchases-datatable', 'PurchaseController@getDatatable');
+   
 });
 
 Route::post('register', 'AuthController@register');

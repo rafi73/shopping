@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Stock;
 use App\Http\Resources\StockResource;
+use DB;
+use Exception;
+use App\Purchase;
 
 
 class StockController extends Controller
@@ -39,6 +42,7 @@ class StockController extends Controller
         $stock->batch= $request->input('batch');
         $stock->seller_id= $request->input('seller_id');
         $stock->expiry_date= $request->input('expiry_date');
+        $stock->cost_price= $request->input('cost_price');
         $stock->active= $request->input('active');
         $stock->created_by= $request->input('created_by');
         $stock->updated_by= $request->input('updated_by');
@@ -169,5 +173,42 @@ class StockController extends Controller
 
         // Return collection of Stocks as a resource
         return StockResource::collection($stocks);
+    }
+
+     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function addStockFromPurchase(Request $request)
+    {
+        $stock = new Stock;
+        DB::beginTransaction();
+        try
+        {
+            $purchase = Purchase::findOrFail($request->input('purchase_id'));
+            $purchase->added_to_stock = true;
+            $purchase->save();
+
+            $stock->product_id= $request->input('product_id');
+            $stock->quantity= $request->input('quantity');
+            $stock->batch= $request->input('batch');
+            $stock->seller_id= $request->input('seller_id');
+            $stock->cost_price= $request->input('cost_price');
+            $stock->expiry_date= $request->input('expiry_date');
+            $stock->active= $request->input('active');
+            $stock->created_by= $request->input('created_by');
+            $stock->updated_by= $request->input('updated_by');
+            $stock->save();
+
+            DB::commit();
+        }
+        catch(Exception $exception)
+        {
+            DB::rollback();
+            return response()->json(['error' => $exception->getMessage()], 500);
+        }
+        return new StockResource($stock);
     }
 }
