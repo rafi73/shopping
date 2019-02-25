@@ -37,6 +37,18 @@
 	background:#1976D2 !important;
 }
 
+.multiselect__tags {
+    border-radius: 0px;
+}
+
+.multiselect__placeholder{
+    color: black
+}
+
+.multiselect__content-wrapper {
+    border-radius: 0px;
+}
+
 .is-danger  {
   color: #FF6B6B;
   font-size: 12px;
